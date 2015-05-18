@@ -55,4 +55,5 @@ ExternalProject_Add(
     TEST_COMMAND ""
 )
 
+add_subdirectory(app)
 add_subdirectory(lib)
