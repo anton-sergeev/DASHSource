@@ -16,8 +16,8 @@ include_directories(
 )
 
 link_directories(
-	${tinyxml_lib}
-	${curl_lib}
+	${curl_bin}/lib
+	${tiny_bin}
 )
 
 add_executable(${PROJECT} ${SOURCES})
