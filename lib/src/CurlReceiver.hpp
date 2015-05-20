@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * INCLUDE FILES                                                   *
 *******************************************************************/
 #include "IHTTPReceiver.hpp"
-
+#include "curl/curl.h"
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
@@ -49,4 +49,5 @@ public:
 	bool Get(std::string url, IHTTPCallback *callback);
 private:
 	IHTTPCallback *m_callback;
+	CURL *m_curl;
 };

@@ -29,7 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
-#include <curl.h>
 #include "CurlReceiver.hpp"
 
 /******************************************************************
@@ -59,30 +58,54 @@ bool IHTTPReceiver::SetInstance(IHTTPReceiver *inst)
 
 CurlReceiver::CurlReceiver()
 {
-	
+	m_curl = NULL;
+	m_callback = NULL;
 }
 
 CurlReceiver::~CurlReceiver()
 {
-	
+	Release();
 }
 
 bool CurlReceiver::Init()
 {
-	//global initialisation for curl
-	return true;
+	bool initialized = false;
+	m_curl = curl_easy_init();
+	
+	if (m_curl)
+		initialized = true;
+
+	return initialized;
 }
 
 bool CurlReceiver::Release()
 {
-	//global deinitialisation for curl
+	curl_easy_cleanup(m_curl);
 	return true;
 }
 
 bool CurlReceiver::Get(std::string url, IHTTPCallback *callback)
-{
+{	
+	bool res = false;
 	m_callback = callback;
-	//heree need to get data, periodically calling callback
-	return true;
+	if (m_curl){
+		FILE *file;
+		CURLcode performed;
+	
+		char out_file_name[FILENAME_MAX] = "DownloadFile.mpd";
+		file = fopen(out_file_name, "wb");
+		curl_easy_setopt(m_curl, CURLOPT_URL, &url);
+		curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, NULL); //TODO: add callback function. 
+								// It should return number of bytes; 
+								// Now it uses function by default;
+		curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, file);
+		
+		if (curl_easy_perform(m_curl) == 0) {
+			res = true;
+		}
+		fclose(file);
+	}
+
+	return res;
 }
 
