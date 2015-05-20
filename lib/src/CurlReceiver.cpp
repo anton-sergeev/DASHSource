@@ -91,10 +91,14 @@ bool CurlReceiver::Get(std::string url, IHTTPCallback *callback)
 	if (m_curl){
 		FILE *file;
 		CURLcode performed;
-	
+		
+		char* m_url = new char[url.size() + 1];
+		std::copy(url.begin(), url.end(), m_url);
+		m_url[url.size()] = '\0';	
+		
 		char out_file_name[FILENAME_MAX] = "DownloadFile.mpd";
 		file = fopen(out_file_name, "wb");
-		curl_easy_setopt(m_curl, CURLOPT_URL, &url);
+		curl_easy_setopt(m_curl, CURLOPT_URL, m_url);
 		curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, NULL); //TODO: add callback function. 
 								// It should return number of bytes; 
 								// Now it uses function by default;
@@ -103,6 +107,7 @@ bool CurlReceiver::Get(std::string url, IHTTPCallback *callback)
 		if (curl_easy_perform(m_curl) == 0) {
 			res = true;
 		}
+		delete[] m_url;
 		fclose(file);
 	}
 
