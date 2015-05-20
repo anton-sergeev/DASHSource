@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************/
 #include <tinyxml2.h>
 #include "MPDManager.hpp"
-
+#include "CurlReceiver.hpp"
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
@@ -46,9 +46,11 @@ MPDManager::~MPDManager()
 }
 
 bool MPDManager::Start(std::string &url)
-{
+{	
 	m_url = url;
-	//run thread
+	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance(); 
+	curl_receiver -> Init();
+	curl_receiver -> Get(m_url, NULL);
 	return true;
 }
 
