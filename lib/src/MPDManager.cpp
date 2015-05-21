@@ -14,7 +14,7 @@ modification, are permitted provided that the following conditions are met:
   this list of conditions and the following disclaimer in the documentation
   and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 MPDManager::MPDManager()
 	: m_url()
 {
-	
+
 }
 
 MPDManager::~MPDManager()
@@ -46,9 +46,9 @@ MPDManager::~MPDManager()
 }
 
 bool MPDManager::Start(std::string &url)
-{	
+{
 	m_url = url;
-	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance(); 
+	IHTTPReceiver *curl_receiver = IHTTPReceiver::Instance();
 	curl_receiver -> Init();
 	curl_receiver -> Get(m_url, NULL);
 	return true;
@@ -58,6 +58,34 @@ bool MPDManager::Stop()
 {
 	//stop thread
 	return true;
+}
+
+EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
+{
+	EventStream *newEventStream = new EventStream;
+	if(element->Attribute("schemeIdUri")) {
+		newEventStream->schemeIdUri = element->Attribute("schemeIdUri");
+	}
+	if(element->Attribute("value")) {
+		newEventStream->value = element->Attribute("value");
+	}
+	if(element->Attribute("timescale")) {
+		newEventStream->timescale = atol(el->Attribute("timescale"));
+	}
+	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("Event"); child_element; child_element = child_element->NextSiblingElement("Event")) {
+		Event *newEvent = new Event;
+		if(child_element->Attribute("presentationTime")) {
+			newEvent->presentationTime = atol(child_element->Attribute("presentationTime"));
+		}
+		if(child_element->Attribute("duration")) {
+			newEvent->duration = atol(child_element->Attribute("duration"));
+		}
+		if(child_element->Attribute("id")) {
+			newEvent->id = atoi(child_element->Attribute("id"));
+		}
+		newEventStream->event.push_back(newEvent);
+	}
+	return newEventStream;
 }
 
 bool MPDManager::ThreadLoop()
