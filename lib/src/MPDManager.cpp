@@ -29,7 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
-#include <tinyxml2.h>
 #include "MPDManager.hpp"
 #include "CurlReceiver.hpp"
 /******************************************************************

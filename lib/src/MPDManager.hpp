@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************/
 #include <string>
 #include "Events.hpp"
+#include "tinyxml2.h"
 #include <stdlib.h>
 
 /******************************************************************
