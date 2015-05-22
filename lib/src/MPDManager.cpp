@@ -53,8 +53,6 @@ MPDManager::~MPDManager()
 bool MPDManager::Start(std::string &url)
 {
 	m_url = url;
-<<<<<<< HEAD
-<<<<<<< HEAD
 //	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
 //	curl_receiver -> Init();
 //	curl_receiver -> Get(m_url, NULL);

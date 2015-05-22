@@ -30,21 +30,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * INCLUDE FILES                                                   *
 *******************************************************************/
 #include <string>
-<<<<<<< HEAD
-<<<<<<< HEAD
 #include <iostream>
 #include <list>
 #include "tinyxml2.h"
 #include "AdaptationSet.hpp"
-using namespace tinyxml2;
-=======
-=======
->>>>>>> 2431f095964ac361604bccaa1fcb0c5cf83e9812
 #include "Events.hpp"
-#include "tinyxml2.h"
 #include <stdlib.h>
+using namespace tinyxml2;
 
->>>>>>> 2431f095964ac361604bccaa1fcb0c5cf83e9812
+
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
