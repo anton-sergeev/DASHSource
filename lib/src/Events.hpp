@@ -1,5 +1,5 @@
 /*
- lib/src/MPDManager.hpp
+ lib/src/Events.hpp
 
 Copyright (c) 2015, Elecard Multimedia School
 All rights reserved.
@@ -29,40 +29,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
-#include <string>
-<<<<<<< HEAD
-#include <iostream>
-#include <list>
-#include "tinyxml2.h"
-#include "AdaptationSet.hpp"
-using namespace tinyxml2;
-=======
-#include "Events.hpp"
-#include "tinyxml2.h"
-#include <stdlib.h>
 
->>>>>>> 2431f095964ac361604bccaa1fcb0c5cf83e9812
+#include <string>
+#include <list>
+
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
-class MPDManager
-{
-public:
-	MPDManager();
-	~MPDManager();
 
-	bool Start(std::string &url);
-	bool Stop();
-<<<<<<< HEAD
-	std::list<AdaptationSet> getAdaptationList();
-=======
-	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
+typedef struct Event {
+	unsigned long presentationTime;
+	unsigned long duration;
+	unsigned int id;
+} Event;
 
->>>>>>> 2431f095964ac361604bccaa1fcb0c5cf83e9812
-private:
-	bool ThreadLoop();
-// 	std::list<DASHRepresentation> GetRepresentationList(void);
-	std::string m_url;
-	XMLDocument *MPDFile;
-//
-};
+typedef struct EventStream {
+	std::string schemeIdUri;
+	std::string value;
+	unsigned int timescale;
+	std::list<Event *> event;
+} EventStream;

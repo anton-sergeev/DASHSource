@@ -53,18 +53,53 @@ MPDManager::~MPDManager()
 bool MPDManager::Start(std::string &url)
 {
 	m_url = url;
+<<<<<<< HEAD
 //	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
 //	curl_receiver -> Init();
 //	curl_receiver -> Get(m_url, NULL);
 	std::string filename = "OfForestAndMen_10s_onDemand_2014_05_09.mpd"; // For example
 	MPDFile = new XMLDocument();
 	return MPDFile->LoadFile(filename.c_str());
+=======
+	IHTTPReceiver *curl_receiver = IHTTPReceiver::Instance();
+	curl_receiver -> Init();
+	curl_receiver -> Get(m_url, NULL);
+	return true;
+>>>>>>> 2431f095964ac361604bccaa1fcb0c5cf83e9812
 }
 
 bool MPDManager::Stop()
 {
 	//stop thread
 	return true;
+}
+
+EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
+{
+	EventStream *newEventStream = new EventStream;
+	if(element->Attribute("schemeIdUri")) {
+		newEventStream->schemeIdUri = element->Attribute("schemeIdUri");
+	}
+	if(element->Attribute("value")) {
+		newEventStream->value = element->Attribute("value");
+	}
+	if(element->Attribute("timescale")) {
+		newEventStream->timescale = atol(el->Attribute("timescale"));
+	}
+	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("Event"); child_element; child_element = child_element->NextSiblingElement("Event")) {
+		Event *newEvent = new Event;
+		if(child_element->Attribute("presentationTime")) {
+			newEvent->presentationTime = atol(child_element->Attribute("presentationTime"));
+		}
+		if(child_element->Attribute("duration")) {
+			newEvent->duration = atol(child_element->Attribute("duration"));
+		}
+		if(child_element->Attribute("id")) {
+			newEvent->id = atoi(child_element->Attribute("id"));
+		}
+		newEventStream->event.push_back(newEvent);
+	}
+	return newEventStream;
 }
 
 bool MPDManager::ThreadLoop()
