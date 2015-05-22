@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
+class MPDManager;
 
 enum Language { Russian, English };
 
@@ -48,13 +49,16 @@ union ConditionalUintType {
 	bool flag;
 };
 
-class AdapationSet
+class AdaptationSet
 {
+public :
+	friend MPDManager;
 private:
 	/* Elements */
 	/*	...		*/
 
 	/* Atributes */
+
 	unsigned int id;
 	unsigned int group;
 	unsigned int minBandwidth;
@@ -75,6 +79,6 @@ private:
 	RatioType pictureAspectRatio;
 
 public:
-	AdapationSet();
-	~AdapationSet();
+	AdaptationSet();
+	~AdaptationSet();
 };

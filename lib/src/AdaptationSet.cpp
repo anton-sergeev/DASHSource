@@ -29,19 +29,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
-
-#include "RatioType.hpp"
+#include "AdaptationSet.hpp"
 
 /******************************************************************
 * FUNCTION IMPLEMENTATION                     <Module>_<Word>+    *
 *******************************************************************/
 
-AdapationSet::AdapationSet()
+AdaptationSet::AdaptationSet()
 {
 
 }
 
-AdapationSet::~AdapationSet()
+AdaptationSet::~AdaptationSet()
 {
 
 }

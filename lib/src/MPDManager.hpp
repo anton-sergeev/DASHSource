@@ -30,7 +30,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * INCLUDE FILES                                                   *
 *******************************************************************/
 #include <string>
-
+#include <iostream>
+#include <list>
+#include "tinyxml2.h"
+#include "AdaptationSet.hpp"
+using namespace tinyxml2;
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
@@ -42,11 +46,11 @@ public:
 
 	bool Start(std::string &url);
 	bool Stop();
-
+	std::list<AdaptationSet> getAdaptationList();
 private:
 	bool ThreadLoop();
 // 	std::list<DASHRepresentation> GetRepresentationList(void);
-
-private:
 	std::string m_url;
+	XMLDocument *MPDFile;
+//
 };
