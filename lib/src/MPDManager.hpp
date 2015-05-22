@@ -31,12 +31,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************/
 #include <string>
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include <iostream>
 #include <list>
 #include "tinyxml2.h"
 #include "AdaptationSet.hpp"
 using namespace tinyxml2;
 =======
+=======
+>>>>>>> 2431f095964ac361604bccaa1fcb0c5cf83e9812
 #include "Events.hpp"
 #include "tinyxml2.h"
 #include <stdlib.h>
@@ -53,12 +56,9 @@ public:
 
 	bool Start(std::string &url);
 	bool Stop();
-<<<<<<< HEAD
 	std::list<AdaptationSet> getAdaptationList();
-=======
 	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
 
->>>>>>> 2431f095964ac361604bccaa1fcb0c5cf83e9812
 private:
 	bool ThreadLoop();
 // 	std::list<DASHRepresentation> GetRepresentationList(void);

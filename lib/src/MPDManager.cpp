@@ -54,18 +54,13 @@ bool MPDManager::Start(std::string &url)
 {
 	m_url = url;
 <<<<<<< HEAD
+<<<<<<< HEAD
 //	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
 //	curl_receiver -> Init();
 //	curl_receiver -> Get(m_url, NULL);
 	std::string filename = "OfForestAndMen_10s_onDemand_2014_05_09.mpd"; // For example
 	MPDFile = new XMLDocument();
 	return MPDFile->LoadFile(filename.c_str());
-=======
-	IHTTPReceiver *curl_receiver = IHTTPReceiver::Instance();
-	curl_receiver -> Init();
-	curl_receiver -> Get(m_url, NULL);
-	return true;
->>>>>>> 2431f095964ac361604bccaa1fcb0c5cf83e9812
 }
 
 bool MPDManager::Stop()
