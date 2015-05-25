@@ -57,8 +57,8 @@ bool MPDManager::Start(std::string &url)
 //	curl_receiver -> Init();
 //	curl_receiver -> Get(m_url, NULL);
 	std::string filename = "OfForestAndMen_10s_onDemand_2014_05_09.mpd"; // For example
-	MPDFile = new XMLDocument();
-	return MPDFile->LoadFile(filename.c_str());
+	//MPDFile = new XMLDocument();
+	//return MPDFile->LoadFile(filename.c_str());
 }
 
 bool MPDManager::Stop()
@@ -95,6 +95,68 @@ EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
 	return newEventStream;
 }
 
+bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
+	if(!XMLRootElement)
+		return false;
+	MPD *newMPD = new MPD;
+	if(XMLRootElement->Attribute("id")) {
+		newMPD->id = XMLRootElement->Attribute("id");
+	}
+	if(XMLRootElement->Attribute("profiles")) {
+		newMPD->profiles = XMLRootElement->Attribute("profiles");
+	}
+	if(XMLRootElement->Attribute("type")) {
+		newMPD->type = XMLRootElement->Attribute("type");
+	}
+	if(XMLRootElement->Attribute("availabilityStartTime")) {
+		newMPD->availabilityStartTime = XMLRootElement->Attribute("availabilityStartTime");
+	}
+	if(XMLRootElement->Attribute("availabilityEndTime")) {
+		newMPD->availabilityEndTime = XMLRootElement->Attribute("availabilityEndTime");
+	}
+	if(XMLRootElement->Attribute("publishTime")) {
+		newMPD->publishTime = XMLRootElement->Attribute("publishTime");
+	}
+	if(XMLRootElement->Attribute("mediaPresentationDuration")) {
+		newMPD->mediaPresentationDuration = XMLRootElement->Attribute("mediaPresentationDuration");
+	}
+	if(XMLRootElement->Attribute("minimumUpdatePeriod")) {
+		newMPD->minimumUpdatePeriod = XMLRootElement->Attribute("minimumUpdatePeriod");
+	}
+	if(XMLRootElement->Attribute("minBufferTime")) {
+		newMPD->minBufferTime = XMLRootElement->Attribute("minBufferTime");
+	}
+	if(XMLRootElement->Attribute("timeShiftBufferDepth")) {
+		newMPD->timeShiftBufferDepth = XMLRootElement->Attribute("timeShiftBufferDepth");
+	}
+	if(XMLRootElement->Attribute("suggestedPresentationDelay")) {
+		newMPD->suggestedPresentationDelay = XMLRootElement->Attribute("suggestedPresentationDelay");
+	}
+	if(XMLRootElement->Attribute("maxSegmentDuration")) {
+		newMPD->maxSegmentDuration = XMLRootElement->Attribute("maxSegmentDuration");
+	}
+	if(XMLRootElement->Attribute("maxSubsegmentDuration")) {
+		newMPD->maxSubsegmentDuration = XMLRootElement->Attribute("maxSubsegmentDuration");
+	}
+	for(tinyxml2::XMLElement *child_element = XMLRootElement->FirstChildElement("Period"); child_element; child_element = child_element->NextSiblingElement("Period")) {
+		//Period *newPeriod = CreatePeriod(child_element);   ----type Period isn't written.
+		//XMLRootElement->period.push_back(newPeriod);
+	}
+	return true;
+}
+
+/*Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
+
+}
+
+AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element) {
+
+}
+
+Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) {
+
+}*/
+
 bool MPDManager::ThreadLoop()
 {
 	// loop {
@@ -105,7 +167,8 @@ bool MPDManager::ThreadLoop()
 
 	return true;
 }
-/*std::list <AdaptationSet> MPDManager::getAdaptationList()
+
+/*std::list <AdaptationSet> MPDManager::getAdaptationList()     ??? need to realise the other method - CreateAdaptationSet
 {
 	std::list <AdaptationSet> reslist;
 	XMLHandle dochand(MPDFile);
@@ -163,6 +226,7 @@ bool MPDManager::ThreadLoop()
 	return reslist;
 
 }*/
+
 // std::list<DASHRepresentation> MPDManager::GetRepresentationList(void)
 // {
 // 	return std::list;

@@ -1,5 +1,5 @@
 /*
- lib/src/MPDManager.hpp
+ lib/src/MPDStruct.hpp
 
 Copyright (c) 2015, Elecard Multimedia School
 All rights reserved.
@@ -31,36 +31,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************/
 
 #include <string>
-#include <iostream>
 #include <list>
-#include "tinyxml2.h"
-#include "AdaptationSet.hpp"
-#include "Events.hpp"
-#include "MPDStruct.hpp"
-#include <stdlib.h>
 
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
-class MPDManager
-{
-public:
-	MPDManager();
-	~MPDManager();
 
-	bool Start(std::string &url);
-	bool Stop();
-	bool CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement);
-
-	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
-	//Period *CreatePeriod(tinyxml2::XMLElement *element);               need to realise them
-	//AdaptationSet *CreateAdaptationSet(tinyxml2::XMLElement *element);
-	//Representation *CreateRepresentation(tinyxml2::XMLElement *element);
-
-private:
-	bool ThreadLoop();
-// 	std::list<DASHRepresentation> GetRepresentationList(void);
-	std::string m_url;
-	tinyxml2::XMLDocument *MPDFile;
-//
-};
+typedef struct MPD {
+	std::string id;
+	std::string profiles;
+	std::string type;
+	std::string availabilityStartTime;
+	std::string availabilityEndTime;
+	std::string publishTime;
+	std::string mediaPresentationDuration;
+	std::string minimumUpdatePeriod;
+	std::string minBufferTime;
+	std::string timeShiftBufferDepth;
+	std::string suggestedPresentationDelay;
+	std::string maxSegmentDuration;
+	std::string maxSubsegmentDuration;
+	//std::list<Period *> period;
+} MPD;
