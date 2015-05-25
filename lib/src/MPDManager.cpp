@@ -77,7 +77,7 @@ EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
 		newEventStream->value = element->Attribute("value");
 	}
 	if(element->Attribute("timescale")) {
-		newEventStream->timescale = atol(el->Attribute("timescale"));
+		newEventStream->timescale = atol(element->Attribute("timescale"));
 	}
 	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("Event"); child_element; child_element = child_element->NextSiblingElement("Event")) {
 		Event *newEvent = new Event;
@@ -105,7 +105,7 @@ bool MPDManager::ThreadLoop()
 
 	return true;
 }
-std::list <AdaptationSet> MPDManager::getAdaptationList()
+/*std::list <AdaptationSet> MPDManager::getAdaptationList()
 {
 	std::list <AdaptationSet> reslist;
 	XMLHandle dochand(MPDFile);
@@ -162,7 +162,7 @@ std::list <AdaptationSet> MPDManager::getAdaptationList()
 	}
 	return reslist;
 
-}
+}*/
 // std::list<DASHRepresentation> MPDManager::GetRepresentationList(void)
 // {
 // 	return std::list;
