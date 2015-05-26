@@ -1,5 +1,5 @@
 /*
- lib/src/MPDStruct.hpp
+ lib/src/Period.hpp
 
 Copyright (c) 2015, Elecard Multimedia School
 All rights reserved.
@@ -37,19 +37,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
 
-typedef struct MPD {
+typedef struct Period {
+	/* Attributes */
 	std::string id;
-	std::string profiles;
-	std::string type;
-	std::string availabilityStartTime;
-	std::string availabilityEndTime;
-	std::string publishTime;
-	std::string mediaPresentationDuration;
-	std::string minimumUpdatePeriod;
-	std::string minBufferTime;
-	std::string timeShiftBufferDepth;
-	std::string suggestedPresentationDelay;
-	std::string maxSegmentDuration;
-	std::string maxSubsegmentDuration;
-	std::list<Period *> period;
-} MPD;
+	std::string start;
+	std::string duration;
+	bool bitstreamSwitching;
+	/* Elements */
+	std::list<EventStream *> eventstream;
+	std::list<AdaptationSet *> adaptationset;
+} Period;

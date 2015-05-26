@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tinyxml2.h"
 #include "AdaptationSet.hpp"
 #include "Events.hpp"
+#include "Period.hpp"
 #include "MPDStruct.hpp"
 #include <stdlib.h>
 
@@ -53,8 +54,8 @@ public:
 	bool CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement);
 
 	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
-	//Period *CreatePeriod(tinyxml2::XMLElement *element);               need to realise them
-	//AdaptationSet *CreateAdaptationSet(tinyxml2::XMLElement *element);
+	Period *CreatePeriod(tinyxml2::XMLElement *element);
+	AdaptationSet *CreateAdaptationSet(tinyxml2::XMLElement *element);
 	//Representation *CreateRepresentation(tinyxml2::XMLElement *element);
 
 private:

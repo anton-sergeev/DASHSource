@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * LOCAL MACROS                                                    *
 *******************************************************************/
-#define GETUintAttr(obj,attr) QueryUnsignedAttribute(#attr,&(obj.attr))
+#define GETUintAttr(obj,attr) QueryUnsignedAttribute(#attr,&(obj->attr))
 
 MPDManager::MPDManager()
 	: m_url()
@@ -65,34 +65,6 @@ bool MPDManager::Stop()
 {
 	//stop thread
 	return true;
-}
-
-EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
-{
-	EventStream *newEventStream = new EventStream;
-	if(element->Attribute("schemeIdUri")) {
-		newEventStream->schemeIdUri = element->Attribute("schemeIdUri");
-	}
-	if(element->Attribute("value")) {
-		newEventStream->value = element->Attribute("value");
-	}
-	if(element->Attribute("timescale")) {
-		newEventStream->timescale = atol(element->Attribute("timescale"));
-	}
-	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("Event"); child_element; child_element = child_element->NextSiblingElement("Event")) {
-		Event *newEvent = new Event;
-		if(child_element->Attribute("presentationTime")) {
-			newEvent->presentationTime = atol(child_element->Attribute("presentationTime"));
-		}
-		if(child_element->Attribute("duration")) {
-			newEvent->duration = atol(child_element->Attribute("duration"));
-		}
-		if(child_element->Attribute("id")) {
-			newEvent->id = atoi(child_element->Attribute("id"));
-		}
-		newEventStream->event.push_back(newEvent);
-	}
-	return newEventStream;
 }
 
 bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
@@ -139,23 +111,114 @@ bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 		newMPD->maxSubsegmentDuration = XMLRootElement->Attribute("maxSubsegmentDuration");
 	}
 	for(tinyxml2::XMLElement *child_element = XMLRootElement->FirstChildElement("Period"); child_element; child_element = child_element->NextSiblingElement("Period")) {
-		//Period *newPeriod = CreatePeriod(child_element);   ----type Period isn't written.
-		//XMLRootElement->period.push_back(newPeriod);
+		Period *newPeriod = CreatePeriod(child_element);
+		newMPD->period.push_back(newPeriod);
 	}
 	return true;
 }
 
-/*Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
-
+Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
+	Period *newPeriod = new Period;
+	if(element->Attribute("id")) {
+		newPeriod->id = element->Attribute("id");
+	}
+	if(element->Attribute("start")) {
+		newPeriod->start = element->Attribute("start");
+	}
+	if(element->Attribute("duration")) {
+		newPeriod->duration = element->Attribute("duration");
+	}
+	if(element->Attribute("bitstreamSwitching")) {
+		element->QueryBoolAttribute("bitstreamSwitching", &(newPeriod->bitstreamSwitching));
+	}
+	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("EventStream"); child_element; child_element = child_element->NextSiblingElement("EventStream")) {
+		EventStream *newEventStream = CreateEventStream(child_element);
+		newPeriod->eventstream.push_back(newEventStream);
+	}
+	/*for(tinyxml2::XMLElement *child_element = element->FirstChildElement("AdaptationSet"); child_element; child_element = child_element->NextSiblingElement("AdaptationSet")) {
+		AdaptationSet *newAdaptationSet = CreateAdaptationSet(child_element);
+		newPeriod->adaptationset.push_back(newAdaptationSet);
+	}*/
+	return newPeriod;
 }
 
-AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element) {
 
-}
+/*AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element) {
+	AdaptationSet *newAdaptationSet = new AdaptationSet;
+	//element->QueryUnsignedAttribute("id", &(newAdaptationSet->id));
+	curNodeSet->GETUintAttr(curSet, group);
+	curNodeSet->GETUintAttr(curSet, minBandwidth);
+	curNodeSet->GETUintAttr(curSet, maxBandwidth);
+	curNodeSet->GETUintAttr(curSet, minWidth);
+	curNodeSet->GETUintAttr(curSet, maxWidth);
+	curNodeSet->GETUintAttr(curSet, minHeight);
+		curNodeSet->GETUintAttr(curSet, maxHeight);
+		curNodeSet->GETUintAttr(curSet, subsegmentStartsWithSAP);
 
+		curNodeSet->QueryBoolAttribute("bitstreamSwitching", &(curSet.bitstreamSwitching));
+		curNodeSet->QueryUnsignedAttribute("segmentAlignment", (unsigned int *) & (curSet.segmentAlignment));
+		curNodeSet->QueryUnsignedAttribute("subsegmentAlignment", (unsigned int *) & (curSet.subsegmentAlignment));
+		//curNodeSet->QueryUnsignedAttribute("lang",(unsigned int *)&(curSet.language));
+		const char *att = 0;
+
+		att = curNodeSet->Attribute("contentType");
+		if(att) {
+			curSet.contentType = att;
+			std::cout << curSet.maxFrameRate.frameRate << std::endl;
+		}
+
+		att = curNodeSet->Attribute("maxFrameRate");
+		if(att) {
+			curSet.maxFrameRate.frameRate = att;
+			std::cout << curSet.maxFrameRate.frameRate << std::endl;
+		}
+
+
+		att = curNodeSet->Attribute("minFrameRate");
+		if(att) {
+			curSet.minFrameRate.frameRate = att;
+			std::cout << curSet.minFrameRate.frameRate << std::endl;
+		}
+
+		att = curNodeSet->Attribute("par");
+		if(att) {
+			curSet.pictureAspectRatio = RatioType(std::string(att));
+			std::cout << std::string(att) << std::endl;
+		}
+}*/
+
+/*
 Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) {
 
 }*/
+
+EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
+{
+	EventStream *newEventStream = new EventStream;
+	if(element->Attribute("schemeIdUri")) {
+		newEventStream->schemeIdUri = element->Attribute("schemeIdUri");
+	}
+	if(element->Attribute("value")) {
+		newEventStream->value = element->Attribute("value");
+	}
+	if(element->Attribute("timescale")) {
+		newEventStream->timescale = atol(element->Attribute("timescale"));
+	}
+	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("Event"); child_element; child_element = child_element->NextSiblingElement("Event")) {
+		Event *newEvent = new Event;
+		if(child_element->Attribute("presentationTime")) {
+			newEvent->presentationTime = atol(child_element->Attribute("presentationTime"));
+		}
+		if(child_element->Attribute("duration")) {
+			newEvent->duration = atol(child_element->Attribute("duration"));
+		}
+		if(child_element->Attribute("id")) {
+			newEvent->id = atoi(child_element->Attribute("id"));
+		}
+		newEventStream->event.push_back(newEvent);
+	}
+	return newEventStream;
+}
 
 bool MPDManager::ThreadLoop()
 {
