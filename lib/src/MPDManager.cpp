@@ -143,8 +143,10 @@ Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
 }
 
 
-/*AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element) {
-	AdaptationSet *newAdaptationSet = new AdaptationSet;
+AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element) 
+{
+	tinyxml2::XMLElement* curNodeSet=element;
+	AdaptationSet *curSet = new AdaptationSet();
 	//element->QueryUnsignedAttribute("id", &(newAdaptationSet->id));
 	curNodeSet->GETUintAttr(curSet, group);
 	curNodeSet->GETUintAttr(curSet, minBandwidth);
@@ -152,40 +154,41 @@ Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
 	curNodeSet->GETUintAttr(curSet, minWidth);
 	curNodeSet->GETUintAttr(curSet, maxWidth);
 	curNodeSet->GETUintAttr(curSet, minHeight);
-		curNodeSet->GETUintAttr(curSet, maxHeight);
-		curNodeSet->GETUintAttr(curSet, subsegmentStartsWithSAP);
+	curNodeSet->GETUintAttr(curSet, maxHeight);
+	curNodeSet->GETUintAttr(curSet, subsegmentStartsWithSAP);
 
-		curNodeSet->QueryBoolAttribute("bitstreamSwitching", &(curSet.bitstreamSwitching));
-		curNodeSet->QueryUnsignedAttribute("segmentAlignment", (unsigned int *) & (curSet.segmentAlignment));
-		curNodeSet->QueryUnsignedAttribute("subsegmentAlignment", (unsigned int *) & (curSet.subsegmentAlignment));
-		//curNodeSet->QueryUnsignedAttribute("lang",(unsigned int *)&(curSet.language));
+	curNodeSet->QueryBoolAttribute("bitstreamSwitching", &(curSet->bitstreamSwitching));
+	curNodeSet->QueryUnsignedAttribute("segmentAlignment", (unsigned int *) & (curSet->segmentAlignment));
+	curNodeSet->QueryUnsignedAttribute("subsegmentAlignment", (unsigned int *) & (curSet->subsegmentAlignment));
+	//curNodeSet->QueryUnsignedAttribute("lang",(unsigned int *)&(curSet.language));
 		const char *att = 0;
 
 		att = curNodeSet->Attribute("contentType");
 		if(att) {
-			curSet.contentType = att;
-			std::cout << curSet.maxFrameRate.frameRate << std::endl;
+			curSet->contentType = att;
+		//	std::cout << curSet->maxFrameRate.frameRate << std::endl;
 		}
 
 		att = curNodeSet->Attribute("maxFrameRate");
 		if(att) {
-			curSet.maxFrameRate.frameRate = att;
-			std::cout << curSet.maxFrameRate.frameRate << std::endl;
+			curSet->maxFrameRate.frameRate = att;
+		//	std::cout << curSet->maxFrameRate.frameRate << std::endl;
 		}
 
 
 		att = curNodeSet->Attribute("minFrameRate");
 		if(att) {
-			curSet.minFrameRate.frameRate = att;
-			std::cout << curSet.minFrameRate.frameRate << std::endl;
+			curSet->minFrameRate.frameRate = att;
+		//	std::cout << curSet->minFrameRate.frameRate << std::endl;
 		}
 
 		att = curNodeSet->Attribute("par");
 		if(att) {
-			curSet.pictureAspectRatio = RatioType(std::string(att));
-			std::cout << std::string(att) << std::endl;
+			curSet->pictureAspectRatio = RatioType(std::string(att));
+		//	std::cout << std::string(att) << std::endl;
 		}
-}*/
+		return curSet;
+}
 
 /*
 Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) {
