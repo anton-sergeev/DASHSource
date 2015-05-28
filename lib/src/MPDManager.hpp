@@ -34,7 +34,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <list>
 #include "tinyxml2.h"
-#include "AdaptationSet.hpp"
+//#include "AdaptationSet.hpp"
+#include "Representation.hpp"
 #include "Events.hpp"
 #include "Period.hpp"
 #include "MPDStruct.hpp"
@@ -56,7 +57,8 @@ public:
 	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
 	Period *CreatePeriod(tinyxml2::XMLElement *element);
 	AdaptationSet *CreateAdaptationSet(tinyxml2::XMLElement *element);
-	//Representation *CreateRepresentation(tinyxml2::XMLElement *element);
+	void fillBaseType(RepresentationBaseType * fillRepr,tinyxml2::XMLElement *element);
+	Representation *CreateRepresentation(tinyxml2::XMLElement *element);
 
 private:
 	bool ThreadLoop();

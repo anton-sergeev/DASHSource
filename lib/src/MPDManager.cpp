@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * INCLUDE FILES                                                   *
 *******************************************************************/
 #include "MPDManager.hpp"
+#include <string>
 //#include "CurlReceiver.hpp"
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
@@ -39,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * LOCAL MACROS                                                    *
 *******************************************************************/
 #define GETUintAttr(obj,attr) QueryUnsignedAttribute(#attr,&(obj->attr))
-
+#define sz(x) ((int)x.size())
 MPDManager::MPDManager()
 	: m_url()
 {
@@ -48,6 +49,33 @@ MPDManager::MPDManager()
 
 MPDManager::~MPDManager()
 {
+}
+
+std::string changeTag(std::string str,char * tagname, char * value)
+{
+	std::string res;
+	int i=0;
+	while(i<sz(str))
+	{
+		if(str[i]!='$') { res=res+str[i]; ++i;}
+		else
+		{
+			int idstart=i;
+			int idfinish=i+1;
+			while(idfinish<sz(str) && str[idfinish]!='$') ++idfinish;
+			if(idfinish<sz(str))
+			{
+				std::string foundtag=str.substr(idstart,idfinish+1-idstart);
+				std::string tagnam="$$";
+				tagnam.insert(1,tagname);
+				if(tagnam.compare(foundtag)==0)
+					{res+=value; i=idfinish+1;}
+						else { res=res+str[i]; ++i;}
+			}
+			else { res=res+str[i]; ++i;}
+		}
+	}
+	return res;
 }
 
 bool MPDManager::Start(std::string &url)
@@ -143,7 +171,7 @@ Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
 }
 
 
-AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element) 
+AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element)
 {
 	tinyxml2::XMLElement* curNodeSet=element;
 	AdaptationSet *curSet = new AdaptationSet();
@@ -168,20 +196,16 @@ AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element)
 			curSet->contentType = att;
 		//	std::cout << curSet->maxFrameRate.frameRate << std::endl;
 		}
-
 		att = curNodeSet->Attribute("maxFrameRate");
 		if(att) {
 			curSet->maxFrameRate.frameRate = att;
 		//	std::cout << curSet->maxFrameRate.frameRate << std::endl;
 		}
-
-
 		att = curNodeSet->Attribute("minFrameRate");
 		if(att) {
 			curSet->minFrameRate.frameRate = att;
 		//	std::cout << curSet->minFrameRate.frameRate << std::endl;
 		}
-
 		att = curNodeSet->Attribute("par");
 		if(att) {
 			curSet->pictureAspectRatio = RatioType(std::string(att));
@@ -189,11 +213,58 @@ AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element)
 		}
 		return curSet;
 }
+void MPDManager::fillBaseType(RepresentationBaseType * fillRepr,tinyxml2::XMLElement *element)
+{
+   // = new RepresentationBaseType;
+    element->GETUintAttr(fillRepr,width);
+    element->GETUintAttr(fillRepr,height);
+    element->GETUintAttr(fillRepr,startWithSAP);
 
-/*
+    element->QueryDoubleAttribute("maximumSAPPeriod",&(fillRepr->maximumSAPPeriod));
+    element->QueryDoubleAttribute("maxPlayoutRate",&(fillRepr->maxPlayoutRate));
+
+    element->QueryBoolAttribute("codingDependency", &(fillRepr->codingDependency));
+
+    const char * att;
+    if(att=element->Attribute("audioSamplingRate"))
+        fillRepr->audioSamplingRate = att;
+    if(att=element->Attribute("mimeType"))
+        fillRepr->mimeType = att;
+    if(att=element->Attribute("segmentProfiles"))
+        fillRepr->segmentProfiles = att;
+    if(att=element->Attribute("codecs"))
+        fillRepr->codecs = att;
+    if(att=element->Attribute("profiles"))
+        fillRepr->profiles = att;
+    if(att=element->Attribute("scanType"))
+        fillRepr->scanType = att;
+    if(att=element->Attribute("frameRate"))
+        fillRepr->frameRate.frameRate = att;
+          //***
+    if(att = element->Attribute("sar"))
+        fillRepr->sar = RatioType(std::string(att));
+}
+// TO DO ; finish parsing of representation
 Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) {
+    Representation *curRepr = new Representation;
+    fillBaseType(curRepr,element);
+    element->GETUintAttr(curRepr,bandwidth);
+    element->GETUintAttr(curRepr,qualityRanking);
 
-}*/
+    const char * att;
+    tinyxml2::XMLElement *childURL;
+    if(childURL=element->FirstChildElement("BaseURL")){
+
+        att=childURL->GetText();
+        curRepr->BaseURL.serviceLocation=att;
+    }
+    if(att=element->Attribute("id"))
+        curRepr->id = att;
+    if(att=element->Attribute("dependencyId"))
+        curRepr->dependencyId.push_back(std::string(att));
+    if(att=element->Attribute("mediaStreamStructureId"))
+        curRepr->mediaStreamStructureId.push_back(std::string(att));
+}
 
 EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
 {
