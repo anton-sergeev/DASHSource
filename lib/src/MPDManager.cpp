@@ -51,32 +51,6 @@ MPDManager::~MPDManager()
 {
 }
 
-std::string changeTag(std::string str,char * tagname, char * value)
-{
-	std::string res;
-	int i=0;
-	while(i<sz(str))
-	{
-		if(str[i]!='$') { res=res+str[i]; ++i;}
-		else
-		{
-			int idstart=i;
-			int idfinish=i+1;
-			while(idfinish<sz(str) && str[idfinish]!='$') ++idfinish;
-			if(idfinish<sz(str))
-			{
-				std::string foundtag=str.substr(idstart,idfinish+1-idstart);
-				std::string tagnam="$$";
-				tagnam.insert(1,tagname);
-				if(tagnam.compare(foundtag)==0)
-					{res+=value; i=idfinish+1;}
-						else { res=res+str[i]; ++i;}
-			}
-			else { res=res+str[i]; ++i;}
-		}
-	}
-	return res;
-}
 
 bool MPDManager::Start(std::string &url)
 {
