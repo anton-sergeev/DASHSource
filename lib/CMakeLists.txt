@@ -7,6 +7,8 @@ set(SOURCES
   src/CurlReceiver.cpp
   src/DASHSource.cpp
   src/MPDManager.cpp
+  src/AdaptationSet.cpp
+  src/RatioType.cpp
 )
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
