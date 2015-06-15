@@ -240,6 +240,7 @@ Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) 
         curRepr->dependencyId.push_back(std::string(att));
     if(att=element->Attribute("mediaStreamStructureId"))
         curRepr->mediaStreamStructureId.push_back(std::string(att));
+	return NULL; //TODO: change this return!!!!!!!!!
 }
 
 EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)

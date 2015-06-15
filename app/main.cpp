@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************/
 #include <cstdint>
 #ifdef _WIN32
+	#include <Windows.h>
+
  //include for Sleep()
 #else
  #include <unistd.h> //sleep()

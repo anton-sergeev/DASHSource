@@ -54,6 +54,7 @@ bool IHTTPReceiver::SetInstance(IHTTPReceiver *inst)
 		delete l_inst;
 	}
 	l_inst = inst;
+	return true; // TODO: change this return for default!!!!!!
 }
 
 CurlReceiver::CurlReceiver()
