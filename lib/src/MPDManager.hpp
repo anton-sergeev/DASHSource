@@ -25,7 +25,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+#pragma once
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <list>
 #include "tinyxml2.h"
-//#include "AdaptationSet.hpp"
+#include "AdaptationSet.hpp"
 #include "Representation.hpp"
 #include "Events.hpp"
 #include "Period.hpp"

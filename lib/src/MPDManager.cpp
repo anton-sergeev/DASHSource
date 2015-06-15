@@ -31,7 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************/
 #include "MPDManager.hpp"
 #include <string>
-//#include "CurlReceiver.hpp"
+#include "CurlReceiver.hpp"
+#include "IHTTPReceiver.hpp"
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
@@ -55,12 +56,13 @@ MPDManager::~MPDManager()
 bool MPDManager::Start(std::string &url)
 {
 	m_url = url;
-//	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
-//	curl_receiver -> Init();
-//	curl_receiver -> Get(m_url, NULL);
-	std::string filename = "OfForestAndMen_10s_onDemand_2014_05_09.mpd"; // For example
+	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
+	curl_receiver -> Init();
+	curl_receiver -> Get(m_url, NULL);
+	std::string filename = "OfForestAndMen.zip"; // For example
 	//MPDFile = new XMLDocument();
 	//return MPDFile->LoadFile(filename.c_str());
+	return true;
 }
 
 bool MPDManager::Stop()

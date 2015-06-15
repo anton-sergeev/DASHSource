@@ -39,7 +39,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int32_t main(int32_t argc, char **argv)
 {
 	IDASHSource *src = IDASHSource::CreateInstance();
-	std::string url("http://wc.exn.su:8881/DASH_test.mpd");
+	//std::string url("http://wc.exn.su:8881/DASH_test.mpd
+	std::string url("http://wc.exn.su:8888/attachments/download/3/OfForestAndMen.zip");
 
 	src->Start(url);
 	sleep(10);
