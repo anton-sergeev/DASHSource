@@ -23,7 +23,7 @@ link_directories(
 add_executable(${PROJECT} ${SOURCES})
 target_link_libraries(${PROJECT}
 	DASHSourceLib
-	curl
+	libcurl
 	tinyxml2
 )
 set_target_properties(${PROJECT} PROPERTIES OUTPUT_NAME dashsrc_test)
