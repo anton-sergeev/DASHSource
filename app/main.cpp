@@ -30,12 +30,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * INCLUDE FILES                                                   *
 *******************************************************************/
 #include <cstdint>
-#include <unistd.h> //sleep(), maby non portable
+#ifdef _WIN32
+ //include for Sleep()
+#else
+ #include <unistd.h> //sleep()
+#endif
 #include <IDASHSource.hpp>
 
 /******************************************************************
 * FUNCTION IMPLEMENTATION                     <Module>_<Word>+    *
 *******************************************************************/
+static int32_t portable_sleep(int32_t millsec)
+{
+	int32_t rc;
+	//portable sleep, getted from http://curl.haxx.se/libcurl/c/multi-post.html
+#ifdef _WIN32
+	Sleep(millsec);
+	rc = 0;
+#else
+	/* Portable sleep for platforms other than Windows. */ 
+	struct timeval wait = { 0, millsec * 1000 }; /* 10s */ 
+	rc = select(0, NULL, NULL, NULL, &wait);
+#endif
+	return rc;
+}
+
 int32_t main(int32_t argc, char **argv)
 {
 	IDASHSource *src = IDASHSource::CreateInstance();
@@ -43,7 +62,9 @@ int32_t main(int32_t argc, char **argv)
 	std::string url("http://wc.exn.su:8888/attachments/download/3/OfForestAndMen.zip");
 
 	src->Start(url);
-	sleep(10);
+
+	portable_sleep(10 * 1000);
+
 	src->Stop();
 	delete src;
 	return 0;
