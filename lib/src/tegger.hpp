@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
-
+#include <stdint.h>
 #include <string>
 #include <map>
 #define sz(x) int(x.size())
@@ -37,7 +37,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * LOCAL TYPEDEFS                                                    *
 *******************************************************************/
 using namespace std;
-typedef  unsigned long long ull;
 const int base = 53; // int for processng of string hash
 
 class tegger
@@ -47,6 +46,6 @@ public:
 	void setTeg(string name, string value);
 	void clear();
 private:
-	map <ull, string> dict;
-	ull cash(string);
+	map <uint64_t, string> dict;
+	uint64_t cash(string);
 };
