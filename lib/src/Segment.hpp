@@ -29,15 +29,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
-
+#include <cstdint>
+#include <vector>
 #include <string>
-//#include <list>
+#include <list>
 
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
 
-typedef struct Segment {
+struct SegmentBaseType{
 	unsigned int timescale;
 	unsigned long presentationTimeOffset;
 	unsigned int timeShiftBufferDepth;
@@ -47,4 +48,46 @@ typedef struct Segment {
 	bool availabilityTimeComplete;
 	std::string Initialization;
 	std::string RepresentationIndex;
+};
+struct URLType{
+	std::string sourceURL;
+	std::string range;
+};
+
+struct Stamp
+{
+	uint64_t time;
+	uint64_t duration;
+	uint64_t range;
+};
+
+struct SegmentTimelineType{
+	std::vector<Stamp> StampSeq;
+	
+};
+
+struct MultipleSegmentBaseType: public SegmentBaseType{
+	SegmentTimelineType SegmentTimeline;
+	URLType BitstreamSwitching;
+	uint32_t duration;
+	uint32_t startNumber;
+	
+};
+
+struct SegmentTemplateType:public MultipleSegmentBaseType{
+	std::string name;
+	uint32_t index;
+	std::string media;
+	std::string initialization;
+	std::string bitstreamSwitching;
+};
+struct SegmentUrlType{
+	std::string media;
+	std::string mediaRange;
+	std::string index;
+	std::string indexRange;
+};
+
+struct SegmentListType: public MultipleSegmentBaseType{
+	std::list<SegmentUrlType> SegmentURLs;
 };
