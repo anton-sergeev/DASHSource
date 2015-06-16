@@ -30,3 +30,7 @@
 build*
 tarballs
 externals
+
+# Temporary files
+*~
+*.swp
