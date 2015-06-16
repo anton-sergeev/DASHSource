@@ -30,10 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * INCLUDE FILES                                                   *
 *******************************************************************/
 #include <cstdint>
-#ifdef _WIN32
-	#include <Windows.h>
-
- //include for Sleep()
+#if (defined _WIN32)
+	#include <windows.h>//include for Sleep()
 #else
  #include <unistd.h> //sleep()
 #endif

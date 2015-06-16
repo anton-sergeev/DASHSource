@@ -28,3 +28,5 @@ include_directories(
 
 add_library(${PROJECT} STATIC ${SOURCES})
 # set_target_properties(${PROJECT} PROPERTIES OUTPUT_NAME dashsrclib)
+
+add_dependencies(${PROJECT} tinyxml2-build curl-build)
