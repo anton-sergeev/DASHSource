@@ -2,6 +2,7 @@
 
 #include <string>
 #include "AdaptationSet.hpp"
+#include "URLtypes.hpp"
 typedef unsigned int ui;
 class RepresentationBaseType
 {
@@ -28,17 +29,11 @@ struct SubRepresentationType
     ui bandwidth;
     std::vector<std::string> contentComponent;
 };
-struct BaseURLType
-{
-    std::string serviceLocation;
-    std::string byteRange;
-};
-class  Representation: public RepresentationBaseType
+
+struct Representation
 {
     public:
-    Representation(): RepresentationBaseType()
-    {
-    }
+    RepresentationBaseType *m_base;
     BaseURLType BaseURL;
     SubRepresentationType SubRepresentation;
     //<xs:element name="SegmentBase" type="SegmentBaseType" minOccurs="0"/>

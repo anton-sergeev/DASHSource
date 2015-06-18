@@ -189,9 +189,9 @@ AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element)
 		}
 		return curSet;
 }
-void MPDManager::fillBaseType(RepresentationBaseType * fillRepr,tinyxml2::XMLElement *element)
+RepresentationBaseType *MPDManager::CreateRepresentationBaseType(tinyxml2::XMLElement *element)
 {
-   // = new RepresentationBaseType;
+		fillRepr= new RepresentationBaseType;
     element->GETUintAttr(fillRepr,width);
     element->GETUintAttr(fillRepr,height);
     element->GETUintAttr(fillRepr,startWithSAP);
@@ -219,14 +219,14 @@ void MPDManager::fillBaseType(RepresentationBaseType * fillRepr,tinyxml2::XMLEle
           //***
     if(att = element->Attribute("sar"))
         fillRepr->sar = RatioType(std::string(att));
+    return fillRepr;    
 }
 // TO DO ; finish parsing of representation
-Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) {
+Representation * MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) {
     Representation *curRepr = new Representation;
-    fillBaseType(curRepr,element);
+    curRepr.m_base=CreateBaseType(curRepr,element);
     element->GETUintAttr(curRepr,bandwidth);
     element->GETUintAttr(curRepr,qualityRanking);
-
     const char * att;
     tinyxml2::XMLElement *childURL;
     if(childURL=element->FirstChildElement("BaseURL")){
