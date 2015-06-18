@@ -30,6 +30,7 @@ struct BaseURLType
 {
     std::string serviceLocation;
     std::string byteRange;
+    std::string URL;
 };
 struct URLType{
 	std::string sourceURL;

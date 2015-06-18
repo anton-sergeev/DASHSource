@@ -40,10 +40,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 typedef struct Period {
 	/* Attributes */
 	std::string id;
-	std::string start;
-	std::string duration;
+	long int start;
+	long int duration;
 	bool bitstreamSwitching;
 	/* Elements */
 	std::list<EventStream *> eventstream;
 	std::list<AdaptationSet *> adaptationset;
+	std::list<BaseURLType *> listBaseURL;
 } Period;

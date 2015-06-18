@@ -57,11 +57,12 @@ public:
 	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
 	Period *CreatePeriod(tinyxml2::XMLElement *element);
 	AdaptationSet *CreateAdaptationSet(tinyxml2::XMLElement *element);
-	void fillBaseType(RepresentationBaseType * fillRepr,tinyxml2::XMLElement *element);
+	RepresentationBaseType *CreateRepresentationBaseType(tinyxml2::XMLElement *element);
 	Representation *CreateRepresentation(tinyxml2::XMLElement *element);
 
 private:
 	bool ThreadLoop();
+	long int getTimeFromDuration(std::string str);
 // 	std::list<DASHRepresentation> GetRepresentationList(void);
 	std::string m_url;
 	tinyxml2::XMLDocument *MPDFile;
