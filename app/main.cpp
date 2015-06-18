@@ -31,7 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************/
 #include <cstdint>
 #if (defined _WIN32)
-	#include <windows.h>//include for Sleep()
+	#include <windows.h> //include for Sleep()
+	//#include <iostream>
 #else
  #include <unistd.h> //sleep()
 #endif
@@ -55,12 +56,15 @@ static int32_t portable_sleep(int32_t millsec)
 	return rc;
 }
 
-int32_t main(int32_t argc, char **argv)
+int32_t main(int32_t argc, char *argv[])
 {
 	IDASHSource *src = IDASHSource::CreateInstance();
-	//std::string url("http://wc.exn.su:8881/DASH_test.mpd
-	std::string url("http://wc.exn.su:8888/attachments/download/3/OfForestAndMen.zip");
+	std::string url("http://wc.exn.su:8888/attachments/download/3/OfForestAndMen.zip"); // TODO: CHANGE!!!
 
+	if (argc == 2){
+		url = std::string(argv[1]);
+	}
+	
 	src->Start(url);
 
 	portable_sleep(10 * 1000);
