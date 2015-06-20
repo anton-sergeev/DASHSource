@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <string>
 #include <list>
-//#include "URLtypes.hpp"
+#include "URLtypes.hpp"
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
@@ -46,8 +46,8 @@ struct SegmentBaseType{
 	bool indexRangeExact;
 	double availabilityTimeOffset;
 	bool availabilityTimeComplete;
-	std::string Initialization;
-	std::string RepresentationIndex;
+	URLType *Initialization;
+	URLType *RepresentationIndex;
 };
 
 

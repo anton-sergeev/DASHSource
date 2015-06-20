@@ -38,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Representation.hpp"
 #include "Events.hpp"
 #include "Period.hpp"
+#include "Segment.hpp"
 #include "MPDStruct.hpp"
 #include <stdlib.h>
 
@@ -59,7 +60,16 @@ public:
 	AdaptationSet *CreateAdaptationSet(tinyxml2::XMLElement *element);
 	RepresentationBaseType *CreateRepresentationBaseType(tinyxml2::XMLElement *element);
 	Representation *CreateRepresentation(tinyxml2::XMLElement *element);
+	URLType* CreateURlType(tinyxml2::XMLElement*);
+	Stamp* CreateStamp(tinyxml2::XMLElement *);
+	SegmentBaseType* CreateSegmentBaseType(tinyxml2::XMLElement *);
+	SegmentTimelineType* CreateSegmentTimelineType(tinyxml2::XMLElement *);
+	MultipleSegmentBaseType* CreateMultipleSegmentBaseType(tinyxml2::XMLElement *);
+	SegmentTemplateType* CreateSegmentTemplateType(tinyxml2::XMLElement *);
+	SegmentListType* CreateSegmentListType(tinyxml2::XMLElement *);
 
+
+	
 private:
 	bool ThreadLoop();
 	long int getTimeFromDuration(std::string str);
