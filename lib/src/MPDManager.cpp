@@ -376,10 +376,69 @@ SegmentBaseType* MPDManager::CreateSegmentBaseType(tinyxml2::XMLElement * elemen
 	if(element->Attribute("RepresentationIndex")) {
 		curType->RepresentationIndex = CreateURlType(element->FirstChildElement("RepresentationIndex"));
 	}
-	
-	
+	return curType;
 }
-
+Stamp *MPDManager::CreateStamp(tinyxml2::XMLElement * element){
+	Stamp *curType= new Stamp;
+	if(element->Attribute("t"))
+	 curType->t=atol(element->Attribute("t"));
+	if(element->Attribute("d"))
+	 curType->t=atol(element->Attribute("d"));
+	element->GETUintAttr(curType,r);
+	return curType;
+}
+SegmentTimelineType * MPDManager::CreateSegmentTimelineType(tinyxml2::XMLElement * element){
+	SegmentTimelineType * curType= new SegmentTimelineType;
+	for(tinyxml2::XMLElement *node=element->FirstChildElement("S");node;node=node->NextSiblingElement("S")){
+		curType->StampSeq.push_back(CreateStamp(node));
+	}
+	return curType;
+}
+MultipleSegmentBaseType *MPDManager::CreateMultipleSegmentBaseType(tinyxml2::XMLElement * element){
+	MultipleSegmentBaseType *curType= new MultipleSegmentBaseType;
+	curType->m_base = CreateSegmentBaseType(element);
+	if(element->FirstChildElement("SegmentTimeline"))
+		curType->SegmentTimeline=CreateSegmentTimelineType(element->FirstChildElement("SegmentTimeline"));
+	if(element->FirstChildElement("BitstreamSwitching"))
+		curType->BitstreamSwitching=CreateURlType(element->FirstChildElement("BitstreamSwitching"));
+	element->GETUintAttr(curType,duration);
+	element->GETUintAttr(curType,startNumber);
+	return curType;
+}
+SegmentTemplateType* MPDManager::CreateSegmentTemplateType(tinyxml2::XMLElement * element){
+	SegmentTemplateType *curType = new SegmentTemplateType;
+	curType->m_base = CreateMultipleSegmentBaseType(element);
+	element->GETUintAttr(curType,index);
+	if(element->Attribute("name"))
+		curType->name=element->Attribute("name");
+	if(element->Attribute("media"))
+		curType->media=element->Attribute("media");
+	if(element->Attribute("initialization"))
+		curType->initialization=element->Attribute("initialization");
+	if(element->Attribute("bitstreamSwitching"))
+		curType->bitstreamSwitching=element->Attribute("bitstreamSwitching");
+	return curType;
+}
+SegmentURLType* MPDManager::CreateSegmentURLType(tinyxml2::XMLElement * element){
+	SegmentURLType* curType= new SegmentURLType;
+	if(element->Attribute("media"))
+		curType->media=element->Attribute("media");
+	if(element->Attribute("mediaRange"))
+		curType->mediaRange=element->Attribute("mediaRange");
+	if(element->Attribute("index"))
+		curType->index=element->Attribute("index");
+	if(element->Attribute("indexRange"))
+		curType->indexRange=element->Attribute("indexRange");
+	return curType; 
+};
+SegmentListType *MPDManager::CreateSegmentListType(tinyxml2::XMLElement * element){
+	SegmentListType* curType= new SegmentListType;
+	curType->m_base=CreateMultipleSegmentBaseType(element);
+	for(tinyxml2::XMLElement *node=element->FirstChildElement("SegmentURL"); node ; node= node->NextSiblingElement("SegmentURL")){
+		curType->SegmentURLs.push_back(CreateSegmentURLType(node));
+	}
+	return curType;
+}
 // std::list<DASHRepresentation> MPDManager::GetRepresentationList(void)
 // {
 // 	return std::list;

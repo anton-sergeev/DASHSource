@@ -61,6 +61,7 @@ public:
 	RepresentationBaseType *CreateRepresentationBaseType(tinyxml2::XMLElement *element);
 	Representation *CreateRepresentation(tinyxml2::XMLElement *element);
 	URLType* CreateURlType(tinyxml2::XMLElement*);
+	SegmentURLType* CreateSegmentURLType(tinyxml2::XMLElement*);
 	Stamp* CreateStamp(tinyxml2::XMLElement *);
 	SegmentBaseType* CreateSegmentBaseType(tinyxml2::XMLElement *);
 	SegmentTimelineType* CreateSegmentTimelineType(tinyxml2::XMLElement *);
@@ -68,8 +69,6 @@ public:
 	SegmentTemplateType* CreateSegmentTemplateType(tinyxml2::XMLElement *);
 	SegmentListType* CreateSegmentListType(tinyxml2::XMLElement *);
 
-
-	
 private:
 	bool ThreadLoop();
 	long int getTimeFromDuration(std::string str);

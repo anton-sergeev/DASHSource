@@ -53,20 +53,20 @@ struct SegmentBaseType{
 
 struct Stamp
 {
-	uint64_t time;
-	uint64_t duration;
-	uint64_t range;
+	uint64_t t;//time
+	uint64_t d;//duration
+	uint32_t r;//range
 };
 
 struct SegmentTimelineType{
-	std::list<Stamp> StampSeq;
+	std::list<Stamp*> StampSeq;
 	
 };
 
 struct MultipleSegmentBaseType{
 	SegmentBaseType *m_base;
-	SegmentTimelineType SegmentTimeline;
-	URLType BitstreamSwitching;
+	SegmentTimelineType *SegmentTimeline;
+	URLType *BitstreamSwitching;
 	uint32_t duration;
 	uint32_t startNumber;
 	
@@ -84,5 +84,5 @@ struct SegmentTemplateType{
 
 struct SegmentListType{
 	MultipleSegmentBaseType * m_base;
-	std::list<SegmentUrlType> SegmentURLs;
+	std::list<SegmentURLType*> SegmentURLs;
 };

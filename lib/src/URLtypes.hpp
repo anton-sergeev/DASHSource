@@ -37,7 +37,7 @@ struct URLType{
 	std::string range;
 };
 
-struct SegmentUrlType{
+struct SegmentURLType{
 	std::string media;
 	std::string mediaRange;
 	std::string index;
