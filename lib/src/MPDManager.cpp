@@ -354,9 +354,12 @@ URLType* MPDManager::CreateURlType(tinyxml2::XMLElement*element){
 }
 SegmentBaseType* MPDManager::CreateSegmentBaseType(tinyxml2::XMLElement * element){
 	SegmentBaseType * curType= new SegmentBaseType;
+	// default values
+	curType->timescale=1;
+	curType->presentationTimeOffset=0;
+	curType->availabilityTimeComplete=true;
 	element->GETUintAttr(curType,timescale);
 	element->GETUintAttr(curType,timeShiftBufferDepth);	
-	
 	if(element->Attribute("presentationTimeOffset"))
 		curType->presentationTimeOffset=atol(element->Attribute("presentationTimeOffset"));
 	
@@ -380,6 +383,9 @@ SegmentBaseType* MPDManager::CreateSegmentBaseType(tinyxml2::XMLElement * elemen
 }
 Stamp *MPDManager::CreateStamp(tinyxml2::XMLElement * element){
 	Stamp *curType= new Stamp;
+	curType->r=0;
+	curType->t=0;
+	
 	if(element->Attribute("t"))
 	 curType->t=atol(element->Attribute("t"));
 	if(element->Attribute("d"))
@@ -389,8 +395,12 @@ Stamp *MPDManager::CreateStamp(tinyxml2::XMLElement * element){
 }
 SegmentTimelineType * MPDManager::CreateSegmentTimelineType(tinyxml2::XMLElement * element){
 	SegmentTimelineType * curType= new SegmentTimelineType;
+	uint32_t startTime=0;
 	for(tinyxml2::XMLElement *node=element->FirstChildElement("S");node;node=node->NextSiblingElement("S")){
-		curType->StampSeq.push_back(CreateStamp(node));
+		Stamp* curS=CreateStamp(node);
+		if(curS->t==0) curS->t=startTime;
+		startTime+=curS->d*(curS->r+1);
+		curType->StampSeq.push_back(curS);
 	}
 	return curType;
 }
@@ -434,7 +444,8 @@ SegmentURLType* MPDManager::CreateSegmentURLType(tinyxml2::XMLElement * element)
 SegmentListType *MPDManager::CreateSegmentListType(tinyxml2::XMLElement * element){
 	SegmentListType* curType= new SegmentListType;
 	curType->m_base=CreateMultipleSegmentBaseType(element);
-	for(tinyxml2::XMLElement *node=element->FirstChildElement("SegmentURL"); node ; node= node->NextSiblingElement("SegmentURL")){
+	for(tinyxml2::XMLElement *node=element->FirstChildElement("SegmentURL"); node ; node= node->NextSiblingElement("SegmentURL"))
+	{
 		curType->SegmentURLs.push_back(CreateSegmentURLType(node));
 	}
 	return curType;
