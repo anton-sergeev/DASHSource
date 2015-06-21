@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <list>
 #include "RatioType.hpp"
 #include "Representation.hpp"
+#include "Segment.hpp"
 
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
@@ -59,6 +60,9 @@ private:
 	/* Elements */
 	std::list<BaseURLType *> listBaseURL;
 	std::list<Representation *> listRepresentation;
+	SegmentBaseType *SegmentBase;
+	SegmentListType *SegmentList;
+	SegmentTemplateType *SegmentTemplate;
 
 	/* Atributes */
 

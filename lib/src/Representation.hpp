@@ -3,6 +3,7 @@
 #include <string>
 #include "AdaptationSet.hpp"
 #include "URLtypes.hpp"
+#include "Segment.hpp"
 
 class RepresentationBaseType {
 
@@ -22,26 +23,26 @@ public:
     	bool codingDependency;
     	std::string scanType;
 };
-struct SubRepresentationType
-{
-    unsigned int level;
-    std::vector<unsigned int> dependencyLevel;
-    unsigned int bandwidth;
-    std::vector<std::string> contentComponent;
+
+struct SubRepresentationType {
+    	unsigned int level;
+    	std::vector<unsigned int> dependencyLevel;
+    	unsigned int bandwidth;
+    	std::vector<std::string> contentComponent;
 };
 
-struct Representation
-{
+struct Representation {
     public:
-    RepresentationBaseType *m_base;
-    BaseURLType BaseURL;
-    SubRepresentationType SubRepresentation;
-    //<xs:element name="SegmentBase" type="SegmentBaseType" minOccurs="0"/>
-    //<xs:element name="SegmentList" type="SegmentListType" minOccurs="0"/>
-    //<xs:element name="SegmentTemplate" type="SegmentTemplateType" minOccurs="0"
-    std::string id;
-    unsigned int bandwidth;
-    unsigned int qualityRanking;
-    std::vector<std::string> dependencyId;
-    std::vector<std::string> mediaStreamStructureId;
+    	RepresentationBaseType *m_base;
+    	std::list<BaseURLType *> BaseURL;
+    	SubRepresentationType SubRepresentation;
+	SegmentBaseType *SegmentBase;
+	SegmentListType *SegmentList;
+	SegmentTemplateType *SegmentTemplate;
+
+    	std::string id;
+    	unsigned int bandwidth;
+    	unsigned int qualityRanking;
+    	std::vector<std::string> dependencyId;
+    	std::vector<std::string> mediaStreamStructureId;
 };

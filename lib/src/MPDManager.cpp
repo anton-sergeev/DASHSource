@@ -166,6 +166,15 @@ Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
 		newBaseURL->URL = child_element->GetText();
 		newPeriod->listBaseURL.push_back(newBaseURL);
 	}
+	if(element->FirstChildElement("SegmentBase")) {
+		newPeriod->SegmentBase = CreateSegmentBaseType(element->FirstChildElement("SegmentBase"));
+	}
+	if(element->FirstChildElement("SegmentList")) {
+		newPeriod->SegmentList = CreateSegmentListType(element->FirstChildElement("SegmentList"));
+	}
+	if(element->FirstChildElement("SegmentTemplate")) {
+		newPeriod->SegmentTemplate = CreateSegmentTemplateType(element->FirstChildElement("SegmentList"));
+	}
 	return newPeriod;
 }
 
@@ -224,6 +233,15 @@ AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element)
 		Representation *newRepresentation = CreateRepresentation(child_element);
 		newAdaptationSet->listRepresentation.push_back(newRepresentation);
 	}
+	if(element->FirstChildElement("SegmentBase")) {
+		newAdaptationSet->SegmentBase = CreateSegmentBaseType(element->FirstChildElement("SegmentBase"));
+	}
+	if(element->FirstChildElement("SegmentList")) {
+		newAdaptationSet->SegmentList = CreateSegmentListType(element->FirstChildElement("SegmentList"));
+	}
+	if(element->FirstChildElement("SegmentTemplate")) {
+		newAdaptationSet->SegmentTemplate = CreateSegmentTemplateType(element->FirstChildElement("SegmentList"));
+	}
 	return newAdaptationSet;
 }
 
@@ -233,11 +251,16 @@ Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) 
 	element->GETUintAttr(curRepr,bandwidth);
 	element->GETUintAttr(curRepr,qualityRanking);
 	const char * att;
-	tinyxml2::XMLElement *childURL;
-	if(childURL=element->FirstChildElement("BaseURL")){
-
-		att=childURL->GetText();
-		curRepr->BaseURL.serviceLocation=att;
+	
+	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("BaseURL"); child_element; child_element = child_element->NextSiblingElement("BaseURL")) {
+		BaseURLType *newBaseURL = new BaseURLType;
+		if(child_element->Attribute("serviceLocation")) {
+			newBaseURL->serviceLocation = child_element->Attribute("serviceLocation");
+		}
+		if(child_element->Attribute("byteRange"))
+			newBaseURL->byteRange = child_element->Attribute("byteRange");
+		newBaseURL->URL = child_element->GetText();
+		curRepr->BaseURL.push_back(newBaseURL);
 	}
 	if(att=element->Attribute("id"))
 		curRepr->id = att;
@@ -245,7 +268,17 @@ Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) 
 		curRepr->dependencyId.push_back(std::string(att));
 	if(att=element->Attribute("mediaStreamStructureId"))
 		curRepr->mediaStreamStructureId.push_back(std::string(att));
-	return NULL; //TODO: change this return!!!!!!!!!
+		
+	if(element->FirstChildElement("SegmentBase")) {
+		curRepr->SegmentBase = CreateSegmentBaseType(element->FirstChildElement("SegmentBase"));
+	}
+	if(element->FirstChildElement("SegmentList")) {
+		curRepr->SegmentList = CreateSegmentListType(element->FirstChildElement("SegmentList"));
+	}
+	if(element->FirstChildElement("SegmentTemplate")) {
+		curRepr->SegmentTemplate = CreateSegmentTemplateType(element->FirstChildElement("SegmentList"));
+	}
+	return curRepr;
 }
 
 RepresentationBaseType *MPDManager::CreateRepresentationBaseType(tinyxml2::XMLElement *element)

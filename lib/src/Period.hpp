@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string>
 #include <list>
+#include "Segment.hpp"
 
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
@@ -47,4 +48,7 @@ typedef struct Period {
 	std::list<EventStream *> eventstream;
 	std::list<AdaptationSet *> adaptationset;
 	std::list<BaseURLType *> listBaseURL;
+	SegmentBaseType *SegmentBase;
+	SegmentListType *SegmentList;
+	SegmentTemplateType *SegmentTemplate;
 } Period;
