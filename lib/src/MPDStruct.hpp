@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string>
 #include <list>
+#include "profiles.hpp"
 
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
@@ -39,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 typedef struct MPD {
 	std::string id;
-	std::string profiles;
+	profiles profile;
 	std::string type;
 	std::string availabilityStartTime;
 	std::string availabilityEndTime;

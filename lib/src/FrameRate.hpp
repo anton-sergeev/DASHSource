@@ -1,5 +1,5 @@
 /*
-lib/src/AdaptationSet.cpp
+lib/src/AdaptationSet.hpp
 
 Copyright (c) 2015, Elecard Multimedia School
 All rights reserved.
@@ -25,23 +25,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef __FRAMERATE__
+#define __FRAMERATE__
+enum Language { Russian, English };
 
-/******************************************************************
-* INCLUDE FILES                                                   *
-*******************************************************************/
-#include "AdaptationSet.hpp"
+typedef struct FrameRateType {
+	std::string frameRate;
+} FrameRateType;
 
-/******************************************************************
-* FUNCTION IMPLEMENTATION                     <Module>_<Word>+    *
-*******************************************************************/
-
-AdaptationSet::AdaptationSet()
-{
-	
-}
-
-AdaptationSet::~AdaptationSet()
-{
-	
-}
-
+union ConditionalUintType {
+	unsigned int value;
+	bool flag;
+};
+#endif
