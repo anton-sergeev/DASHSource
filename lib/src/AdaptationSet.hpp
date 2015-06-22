@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <iostream>
 #include <list>
+#include "FrameRate.hpp"
 #include "RatioType.hpp"
 #include "Representation.hpp"
 #include "Segment.hpp"
@@ -42,17 +43,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
 //class MPDManager;
-
-enum Language { Russian, English };
-
-typedef struct FrameRateType {
-	std::string frameRate;
-} FrameRateType;
-
-union ConditionalUintType {
-	unsigned int value;
-	bool flag;
-};
 
 struct AdaptationSet
 {
