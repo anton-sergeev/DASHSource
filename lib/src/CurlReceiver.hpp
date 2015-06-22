@@ -46,10 +46,9 @@ public:
 
 	bool Init();
 	bool Release();
-
 	bool Get(std::string url, std::string &content);
+
 private:
-	std::string Callback_Function(void *ptr, size_t size, size_t nmemb, std::string &m_callback);
-	std::string content;
+	//size_t Callback_Function(void *ptr, size_t size, size_t nmemb, std::string *content);
 	CURL *m_curl;
 };
