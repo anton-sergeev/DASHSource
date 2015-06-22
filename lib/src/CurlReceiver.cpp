@@ -84,9 +84,9 @@ bool CurlReceiver::Release()
 	return true;
 }
 
-size_t Callback_Function(void *ptr, size_t size, size_t nmemb, std::string *content){
-	std::string *pCallback = static_cast<std::string*>(ptr);
-	*content += *pCallback;
+size_t Callback_Function(char *ptr, size_t size, size_t nmemb, std::string *content){
+	std::string pCallback = static_cast<std::string>((char *)ptr);
+	content -> append (pCallback);
 	return size*nmemb;				
 }
 
@@ -101,7 +101,7 @@ bool CurlReceiver::Get(std::string url, std::string &content)
 		
 		curl_easy_setopt(m_curl, CURLOPT_URL, m_url);
 		curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, Callback_Function);  
-		curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, (void*)&content);
+		curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &content);
 		
 		if (curl_easy_perform(m_curl) == 0) {
 			res = true;
