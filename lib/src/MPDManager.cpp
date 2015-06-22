@@ -83,13 +83,13 @@ bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 	}
 	if(XMLRootElement->Attribute("profiles")) {
         std::string prof = XMLRootElement->Attribute("profiles");
-        switch(prof) {
+        /*switch(prof) {
             case "urn:mpeg:dash:profile:full:2011":
-                newMPD->profiles = eProfiles_full;
+                newMPD->profile = eProfiles_full;
                 break;
                 
             case "urn:mpeg:dash:profile:isoff-on-demand:2011":
-                newMPD->profile = eProfiles_on-demand;
+                newMPD->profile = eProfiles_on_demand;
                 break;
                 
             case "urn:mpeg:dash:profile:isoff-live:2011":
@@ -107,7 +107,7 @@ bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
             case "urn:mpeg:dash:profile:mp2t-simple:2011":
                 newMPD->profile = eProfiles_mpeg_2_ts_simple;
                 break;
-        }
+        } */
 	}
 	if(XMLRootElement->Attribute("type")) {
 		newMPD->type = XMLRootElement->Attribute("type");

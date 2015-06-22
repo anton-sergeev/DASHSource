@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 typedef struct MPD {
 	std::string id;
-	std::enum profiles profile;
+	profiles profile;
 	std::string type;
 	std::string availabilityStartTime;
 	std::string availabilityEndTime;

@@ -32,7 +32,7 @@
 
 enum profiles {
     eProfiles_full = 0,
-    eProfiles_on-demand,
+    eProfiles_on_demand,
     eProfiles_live,
     eProfiles_main,
     eProfiles_mpeg_2_ts_main,
