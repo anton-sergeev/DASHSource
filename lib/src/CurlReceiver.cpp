@@ -85,10 +85,17 @@ bool CurlReceiver::Release()
 	return true;
 }
 
-bool CurlReceiver::Get(std::string url, IHTTPCallback *callback)
+std::string Callback_Function(void *ptr, size_t size, size_t nmemb, std::string &m_callback){
+	std::string *pCallback = static_cast<std::string*>(ptr);
+	m_callback = pCallback;
+	delete pCallback;
+	return m_callback;				// TODO: write to memory
+}
+
+bool CurlReceiver::Get(std::string url, std::string &callback)
 {	
 	bool res = false;
-	m_callback = callback;
+	//m_callback = callback;
 	if (m_curl){
 		FILE *file;
 		CURLcode performed;
@@ -103,7 +110,7 @@ bool CurlReceiver::Get(std::string url, IHTTPCallback *callback)
 		curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, NULL); //TODO: add callback function. 
 								// It should return number of bytes; 
 								// Now it uses function by default;
-		curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, file);
+		//curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, file);
 		
 		if (curl_easy_perform(m_curl) == 0) {
 			res = true;

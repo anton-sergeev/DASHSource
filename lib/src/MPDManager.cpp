@@ -59,7 +59,7 @@ bool MPDManager::Start(std::string &url)
 	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
 	curl_receiver -> Init();
 	curl_receiver -> Get(m_url, NULL);
-	std::string filename = "OfForestAndMen.zip"; // For example
+
 	//MPDFile = new XMLDocument();
 	//return MPDFile->LoadFile(filename.c_str());
 	return true;

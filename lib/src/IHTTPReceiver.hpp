@@ -52,7 +52,7 @@ public:
 	virtual bool Init() = 0;
 	virtual bool Release() = 0;
 
-	virtual bool Get(std::string url, IHTTPCallback *callback) = 0;
+	virtual bool Get(std::string url, std::string &callback) = 0;
 private:
 // 	IHTTPCallback *m_callback;
 };

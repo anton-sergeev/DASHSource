@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
+#include <string>
 #include "IHTTPReceiver.hpp"
 #include "curl.h"
 /******************************************************************
@@ -46,8 +47,9 @@ public:
 	bool Init();
 	bool Release();
 
-	bool Get(std::string url, IHTTPCallback *callback);
+	bool Get(std::string url, std::string &callback);
 private:
-	IHTTPCallback *m_callback;
+	std::string Callback_Function(void *ptr, size_t size, size_t nmemb, std::string &m_callback);
+	std::string m_callback;
 	CURL *m_curl;
 };
