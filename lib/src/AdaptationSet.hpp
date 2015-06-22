@@ -25,7 +25,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 #pragma once
+
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
@@ -39,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
-class MPDManager;
+//class MPDManager;
 
 enum Language { Russian, English };
 
@@ -52,11 +54,10 @@ union ConditionalUintType {
 	bool flag;
 };
 
-class AdaptationSet
+struct AdaptationSet
 {
-public :
-	friend MPDManager;
-private:
+	// friend MPDManager;
+
 	/* Elements */
 	std::list<BaseURLType *> listBaseURL;
 	std::list<Representation *> listRepresentation;
@@ -85,8 +86,4 @@ private:
 	FrameRateType minFrameRate;
 	FrameRateType maxFrameRate;
 	RatioType pictureAspectRatio;
-
-public:
-	AdaptationSet();
-	~AdaptationSet();
 };
