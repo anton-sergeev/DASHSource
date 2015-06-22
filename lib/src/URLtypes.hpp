@@ -1,5 +1,5 @@
 /*
- lib/src/MPDStruct.hpp
+ lib/src/URLtypes.hpp
 
 Copyright (c) 2015, Elecard Multimedia School
 All rights reserved.
@@ -26,31 +26,20 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-/******************************************************************
-* INCLUDE FILES                                                   *
-*******************************************************************/
+struct BaseURLType
+{
+    std::string serviceLocation;
+    std::string byteRange;
+    std::string URL;
+};
+struct URLType{
+	std::string sourceURL;
+	std::string range;
+};
 
-#include <string>
-#include <list>
-
-/******************************************************************
-* EXPORTED TYPEDEFS                            [for headers only] *
-*******************************************************************/
-
-typedef struct MPD {
-	std::string id;
-	std::string profiles;
-	std::string type;
-	std::string availabilityStartTime;
-	std::string availabilityEndTime;
-	std::string publishTime;
-	long int mediaPresentationDuration;
-	long int minimumUpdatePeriod;
-	long int minBufferTime;
-	long int timeShiftBufferDepth;
-	long int suggestedPresentationDelay;
-	long int maxSegmentDuration;
-	long int maxSubsegmentDuration;
-	std::list<Period *> period;
-	std::list<BaseURLType *> listBaseURL;
-} MPD;
+struct SegmentURLType{
+	std::string media;
+	std::string mediaRange;
+	std::string index;
+	std::string indexRange;
+};

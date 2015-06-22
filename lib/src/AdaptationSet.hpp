@@ -31,7 +31,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************/
 
 #include <iostream>
+#include <list>
 #include "RatioType.hpp"
+#include "Representation.hpp"
+#include "Segment.hpp"
 
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
@@ -40,9 +43,9 @@ class MPDManager;
 
 enum Language { Russian, English };
 
-struct FrameRateType {
+typedef struct FrameRateType {
 	std::string frameRate;
-};
+} FrameRateType;
 
 union ConditionalUintType {
 	unsigned int value;
@@ -55,10 +58,15 @@ public :
 	friend MPDManager;
 private:
 	/* Elements */
-	/*	...		*/
+	std::list<BaseURLType *> listBaseURL;
+	std::list<Representation *> listRepresentation;
+	SegmentBaseType *SegmentBase;
+	SegmentListType *SegmentList;
+	SegmentTemplateType *SegmentTemplate;
 
 	/* Atributes */
 
+	RepresentationBaseType *m_base;
 	unsigned int id;
 	unsigned int group;
 	unsigned int minBandwidth;

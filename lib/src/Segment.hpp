@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <string>
 #include <list>
-
+#include "URLtypes.hpp"
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
@@ -46,48 +46,43 @@ struct SegmentBaseType{
 	bool indexRangeExact;
 	double availabilityTimeOffset;
 	bool availabilityTimeComplete;
-	std::string Initialization;
-	std::string RepresentationIndex;
+	URLType *Initialization;
+	URLType *RepresentationIndex;
 };
-struct URLType{
-	std::string sourceURL;
-	std::string range;
-};
+
 
 struct Stamp
 {
-	uint64_t time;
-	uint64_t duration;
-	uint64_t range;
+	uint64_t t;//time
+	uint64_t d;//duration
+	uint32_t r;//range
 };
 
 struct SegmentTimelineType{
-	std::vector<Stamp> StampSeq;
+	std::list<Stamp*> StampSeq;
 	
 };
 
-struct MultipleSegmentBaseType: public SegmentBaseType{
-	SegmentTimelineType SegmentTimeline;
-	URLType BitstreamSwitching;
+struct MultipleSegmentBaseType{
+	SegmentBaseType *m_base;
+	SegmentTimelineType *SegmentTimeline;
+	URLType *BitstreamSwitching;
 	uint32_t duration;
 	uint32_t startNumber;
 	
 };
 
-struct SegmentTemplateType:public MultipleSegmentBaseType{
+struct SegmentTemplateType{
+	MultipleSegmentBaseType *m_base;
 	std::string name;
 	uint32_t index;
 	std::string media;
 	std::string initialization;
 	std::string bitstreamSwitching;
 };
-struct SegmentUrlType{
-	std::string media;
-	std::string mediaRange;
-	std::string index;
-	std::string indexRange;
-};
 
-struct SegmentListType: public MultipleSegmentBaseType{
-	std::list<SegmentUrlType> SegmentURLs;
+
+struct SegmentListType{
+	MultipleSegmentBaseType * m_base;
+	std::list<SegmentURLType*> SegmentURLs;
 };

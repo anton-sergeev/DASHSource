@@ -40,8 +40,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * LOCAL MACROS                                                    *
 *******************************************************************/
+
 #define GETUintAttr(obj,attr) QueryUnsignedAttribute(#attr,&(obj->attr))
 #define sz(x) ((int)x.size())
+
 MPDManager::MPDManager()
 	: m_url()
 {
@@ -55,11 +57,14 @@ MPDManager::~MPDManager()
 
 bool MPDManager::Start(std::string &url)
 {
+	std::string MPD_content;
 	m_url = url;
 	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
 	curl_receiver -> Init();
-	curl_receiver -> Get(m_url, NULL);
+	curl_receiver -> Get(m_url, MPD_content);
 
+	//TO DO Solve problem about start of parsing
+	//std::string filename = "OfForestAndMen.zip"; // For example
 	//MPDFile = new XMLDocument();
 	//return MPDFile->LoadFile(filename.c_str());
 	return true;
@@ -94,29 +99,39 @@ bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 		newMPD->publishTime = XMLRootElement->Attribute("publishTime");
 	}
 	if(XMLRootElement->Attribute("mediaPresentationDuration")) {
-		newMPD->mediaPresentationDuration = XMLRootElement->Attribute("mediaPresentationDuration");
+		newMPD->mediaPresentationDuration = getTimeFromDuration(XMLRootElement->Attribute("mediaPresentationDuration"));
 	}
 	if(XMLRootElement->Attribute("minimumUpdatePeriod")) {
-		newMPD->minimumUpdatePeriod = XMLRootElement->Attribute("minimumUpdatePeriod");
+		newMPD->minimumUpdatePeriod = getTimeFromDuration(XMLRootElement->Attribute("minimumUpdatePeriod"));
 	}
 	if(XMLRootElement->Attribute("minBufferTime")) {
-		newMPD->minBufferTime = XMLRootElement->Attribute("minBufferTime");
+		newMPD->minBufferTime = getTimeFromDuration(XMLRootElement->Attribute("minBufferTime"));
 	}
 	if(XMLRootElement->Attribute("timeShiftBufferDepth")) {
-		newMPD->timeShiftBufferDepth = XMLRootElement->Attribute("timeShiftBufferDepth");
+		newMPD->timeShiftBufferDepth = getTimeFromDuration(XMLRootElement->Attribute("timeShiftBufferDepth"));
 	}
 	if(XMLRootElement->Attribute("suggestedPresentationDelay")) {
-		newMPD->suggestedPresentationDelay = XMLRootElement->Attribute("suggestedPresentationDelay");
+		newMPD->suggestedPresentationDelay = getTimeFromDuration(XMLRootElement->Attribute("suggestedPresentationDelay"));
 	}
 	if(XMLRootElement->Attribute("maxSegmentDuration")) {
-		newMPD->maxSegmentDuration = XMLRootElement->Attribute("maxSegmentDuration");
+		newMPD->maxSegmentDuration = getTimeFromDuration(XMLRootElement->Attribute("maxSegmentDuration"));
 	}
 	if(XMLRootElement->Attribute("maxSubsegmentDuration")) {
-		newMPD->maxSubsegmentDuration = XMLRootElement->Attribute("maxSubsegmentDuration");
+		newMPD->maxSubsegmentDuration = getTimeFromDuration(XMLRootElement->Attribute("maxSubsegmentDuration"));
 	}
 	for(tinyxml2::XMLElement *child_element = XMLRootElement->FirstChildElement("Period"); child_element; child_element = child_element->NextSiblingElement("Period")) {
 		Period *newPeriod = CreatePeriod(child_element);
 		newMPD->period.push_back(newPeriod);
+	}
+	for(tinyxml2::XMLElement *child_element = XMLRootElement->FirstChildElement("BaseURL"); child_element; child_element = child_element->NextSiblingElement("BaseURL")) {
+		BaseURLType *newBaseURL = new BaseURLType;
+		if(child_element->Attribute("serviceLocation")) {
+			newBaseURL->serviceLocation = child_element->Attribute("serviceLocation");
+		}
+		if(child_element->Attribute("byteRange"))
+			newBaseURL->byteRange = child_element->Attribute("byteRange");
+		newBaseURL->URL = child_element->GetText();
+		newMPD->listBaseURL.push_back(newBaseURL);
 	}
 	return true;
 }
@@ -127,10 +142,10 @@ Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
 		newPeriod->id = element->Attribute("id");
 	}
 	if(element->Attribute("start")) {
-		newPeriod->start = element->Attribute("start");
+		newPeriod->start = getTimeFromDuration(element->Attribute("start"));
 	}
 	if(element->Attribute("duration")) {
-		newPeriod->duration = element->Attribute("duration");
+		newPeriod->duration = getTimeFromDuration(element->Attribute("duration"));
 	}
 	if(element->Attribute("bitstreamSwitching")) {
 		element->QueryBoolAttribute("bitstreamSwitching", &(newPeriod->bitstreamSwitching));
@@ -139,10 +154,29 @@ Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
 		EventStream *newEventStream = CreateEventStream(child_element);
 		newPeriod->eventstream.push_back(newEventStream);
 	}
-	/*for(tinyxml2::XMLElement *child_element = element->FirstChildElement("AdaptationSet"); child_element; child_element = child_element->NextSiblingElement("AdaptationSet")) {
+	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("AdaptationSet"); child_element; child_element = child_element->NextSiblingElement("AdaptationSet")) {
 		AdaptationSet *newAdaptationSet = CreateAdaptationSet(child_element);
 		newPeriod->adaptationset.push_back(newAdaptationSet);
-	}*/
+	}
+	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("BaseURL"); child_element; child_element = child_element->NextSiblingElement("BaseURL")) {
+		BaseURLType *newBaseURL = new BaseURLType;
+		if(child_element->Attribute("serviceLocation")) {
+			newBaseURL->serviceLocation = child_element->Attribute("serviceLocation");
+		}
+		if(child_element->Attribute("byteRange"))
+			newBaseURL->byteRange = child_element->Attribute("byteRange");
+		newBaseURL->URL = child_element->GetText();
+		newPeriod->listBaseURL.push_back(newBaseURL);
+	}
+	if(element->FirstChildElement("SegmentBase")) {
+		newPeriod->SegmentBase = CreateSegmentBaseType(element->FirstChildElement("SegmentBase"));
+	}
+	if(element->FirstChildElement("SegmentList")) {
+		newPeriod->SegmentList = CreateSegmentListType(element->FirstChildElement("SegmentList"));
+	}
+	if(element->FirstChildElement("SegmentTemplate")) {
+		newPeriod->SegmentTemplate = CreateSegmentTemplateType(element->FirstChildElement("SegmentList"));
+	}
 	return newPeriod;
 }
 
@@ -150,97 +184,136 @@ Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
 AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element)
 {
 	tinyxml2::XMLElement* curNodeSet=element;
-	AdaptationSet *curSet = new AdaptationSet();
-	//element->QueryUnsignedAttribute("id", &(newAdaptationSet->id));
-	curNodeSet->GETUintAttr(curSet, group);
-	curNodeSet->GETUintAttr(curSet, minBandwidth);
-	curNodeSet->GETUintAttr(curSet, maxBandwidth);
-	curNodeSet->GETUintAttr(curSet, minWidth);
-	curNodeSet->GETUintAttr(curSet, maxWidth);
-	curNodeSet->GETUintAttr(curSet, minHeight);
-	curNodeSet->GETUintAttr(curSet, maxHeight);
-	curNodeSet->GETUintAttr(curSet, subsegmentStartsWithSAP);
-
-	curNodeSet->QueryBoolAttribute("bitstreamSwitching", &(curSet->bitstreamSwitching));
-	curNodeSet->QueryUnsignedAttribute("segmentAlignment", (unsigned int *) & (curSet->segmentAlignment));
-	curNodeSet->QueryUnsignedAttribute("subsegmentAlignment", (unsigned int *) & (curSet->subsegmentAlignment));
-	//curNodeSet->QueryUnsignedAttribute("lang",(unsigned int *)&(curSet.language));
-		const char *att = 0;
-
-		att = curNodeSet->Attribute("contentType");
-		if(att) {
-			curSet->contentType = att;
-		//	std::cout << curSet->maxFrameRate.frameRate << std::endl;
+	AdaptationSet *newAdaptationSet = new AdaptationSet();
+	newAdaptationSet->m_base = CreateRepresentationBaseType(element);
+	
+	element->QueryUnsignedAttribute("id", &(newAdaptationSet->id));
+	
+	// #define GETUintAttr(obj,attr) QueryUnsignedAttribute(#attr,&(obj->attr))
+	
+	// Given an attribute name, QueryIntAttribute() returns XML_NO_ERROR,
+	// if the conversion can't be performed, or XML_NO_ATTRIBUTE if the attribute doesn't exist. 
+	
+	// If successful, the result of the conversion will be written to 'value'. 
+	// If not successful, nothing will be written to 'value'. 
+	//
+	curNodeSet->GETUintAttr(newAdaptationSet, group);
+	curNodeSet->GETUintAttr(newAdaptationSet, minBandwidth);
+	curNodeSet->GETUintAttr(newAdaptationSet, maxBandwidth);
+	curNodeSet->GETUintAttr(newAdaptationSet, minWidth);
+	curNodeSet->GETUintAttr(newAdaptationSet, maxWidth);
+	curNodeSet->GETUintAttr(newAdaptationSet, minHeight);
+	curNodeSet->GETUintAttr(newAdaptationSet, maxHeight);
+	curNodeSet->GETUintAttr(newAdaptationSet, subsegmentStartsWithSAP);
+	curNodeSet->QueryBoolAttribute("bitstreamSwitching", &(newAdaptationSet->bitstreamSwitching));
+	curNodeSet->QueryUnsignedAttribute("segmentAlignment", (unsigned int *) & (newAdaptationSet->segmentAlignment));
+	curNodeSet->QueryUnsignedAttribute("subsegmentAlignment", (unsigned int *) & (newAdaptationSet->subsegmentAlignment));
+	//curNodeSet->QueryUnsignedAttribute("lang",(unsigned int *)&(newAdaptationSet.language));
+	if(element->Attribute("contentType")) {
+		newAdaptationSet->contentType = element->Attribute("contentType");
+	}
+	if(element->Attribute("maxFrameRate")) {
+		newAdaptationSet->maxFrameRate.frameRate = element->Attribute("maxFrameRate");
+	}
+	if(element->Attribute("minFrameRate")) {
+		newAdaptationSet->minFrameRate.frameRate = element->Attribute("minFrameRate");
+	}
+	if(element->Attribute("par")) {
+		newAdaptationSet->pictureAspectRatio = RatioType(element->Attribute("par"));
+	}
+	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("BaseURL"); child_element; child_element = child_element->NextSiblingElement("BaseURL")) {
+		BaseURLType *newBaseURL = new BaseURLType;
+		if(child_element->Attribute("serviceLocation")) {
+			newBaseURL->serviceLocation = child_element->Attribute("serviceLocation");
 		}
-		att = curNodeSet->Attribute("maxFrameRate");
-		if(att) {
-			curSet->maxFrameRate.frameRate = att;
-		//	std::cout << curSet->maxFrameRate.frameRate << std::endl;
-		}
-		att = curNodeSet->Attribute("minFrameRate");
-		if(att) {
-			curSet->minFrameRate.frameRate = att;
-		//	std::cout << curSet->minFrameRate.frameRate << std::endl;
-		}
-		att = curNodeSet->Attribute("par");
-		if(att) {
-			curSet->pictureAspectRatio = RatioType(std::string(att));
-		//	std::cout << std::string(att) << std::endl;
-		}
-		return curSet;
+		if(child_element->Attribute("byteRange"))
+			newBaseURL->byteRange = child_element->Attribute("byteRange");
+		newBaseURL->URL = child_element->GetText();
+		newAdaptationSet->listBaseURL.push_back(newBaseURL);
+	}
+	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("Representation"); child_element; child_element = child_element->NextSiblingElement("Representation")) {
+		Representation *newRepresentation = CreateRepresentation(child_element);
+		newAdaptationSet->listRepresentation.push_back(newRepresentation);
+	}
+	if(element->FirstChildElement("SegmentBase")) {
+		newAdaptationSet->SegmentBase = CreateSegmentBaseType(element->FirstChildElement("SegmentBase"));
+	}
+	if(element->FirstChildElement("SegmentList")) {
+		newAdaptationSet->SegmentList = CreateSegmentListType(element->FirstChildElement("SegmentList"));
+	}
+	if(element->FirstChildElement("SegmentTemplate")) {
+		newAdaptationSet->SegmentTemplate = CreateSegmentTemplateType(element->FirstChildElement("SegmentList"));
+	}
+	return newAdaptationSet;
 }
-void MPDManager::fillBaseType(RepresentationBaseType * fillRepr,tinyxml2::XMLElement *element)
-{
-   // = new RepresentationBaseType;
-    element->GETUintAttr(fillRepr,width);
-    element->GETUintAttr(fillRepr,height);
-    element->GETUintAttr(fillRepr,startWithSAP);
 
-    element->QueryDoubleAttribute("maximumSAPPeriod",&(fillRepr->maximumSAPPeriod));
-    element->QueryDoubleAttribute("maxPlayoutRate",&(fillRepr->maxPlayoutRate));
-
-    element->QueryBoolAttribute("codingDependency", &(fillRepr->codingDependency));
-
-    const char * att;
-    if(att=element->Attribute("audioSamplingRate"))
-        fillRepr->audioSamplingRate = att;
-    if(att=element->Attribute("mimeType"))
-        fillRepr->mimeType = att;
-    if(att=element->Attribute("segmentProfiles"))
-        fillRepr->segmentProfiles = att;
-    if(att=element->Attribute("codecs"))
-        fillRepr->codecs = att;
-    if(att=element->Attribute("profiles"))
-        fillRepr->profiles = att;
-    if(att=element->Attribute("scanType"))
-        fillRepr->scanType = att;
-    if(att=element->Attribute("frameRate"))
-        fillRepr->frameRate.frameRate = att;
-          //***
-    if(att = element->Attribute("sar"))
-        fillRepr->sar = RatioType(std::string(att));
-}
-// TO DO ; finish parsing of representation
 Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) {
-    Representation *curRepr = new Representation;
-    fillBaseType(curRepr,element);
-    element->GETUintAttr(curRepr,bandwidth);
-    element->GETUintAttr(curRepr,qualityRanking);
+	Representation *curRepr = new Representation;
+	curRepr->m_base = CreateRepresentationBaseType(element);
+	element->GETUintAttr(curRepr,bandwidth);
+	element->GETUintAttr(curRepr,qualityRanking);
+	const char * att;
+	
+	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("BaseURL"); child_element; child_element = child_element->NextSiblingElement("BaseURL")) {
+		BaseURLType *newBaseURL = new BaseURLType;
+		if(child_element->Attribute("serviceLocation")) {
+			newBaseURL->serviceLocation = child_element->Attribute("serviceLocation");
+		}
+		if(child_element->Attribute("byteRange"))
+			newBaseURL->byteRange = child_element->Attribute("byteRange");
+		newBaseURL->URL = child_element->GetText();
+		curRepr->BaseURL.push_back(newBaseURL);
+	}
+	if(att=element->Attribute("id"))
+		curRepr->id = att;
+	if(att=element->Attribute("dependencyId"))
+		curRepr->dependencyId.push_back(std::string(att));
+	if(att=element->Attribute("mediaStreamStructureId"))
+		curRepr->mediaStreamStructureId.push_back(std::string(att));
+		
+	if(element->FirstChildElement("SegmentBase")) {
+		curRepr->SegmentBase = CreateSegmentBaseType(element->FirstChildElement("SegmentBase"));
+	}
+	if(element->FirstChildElement("SegmentList")) {
+		curRepr->SegmentList = CreateSegmentListType(element->FirstChildElement("SegmentList"));
+	}
+	if(element->FirstChildElement("SegmentTemplate")) {
+		curRepr->SegmentTemplate = CreateSegmentTemplateType(element->FirstChildElement("SegmentList"));
+	}
+	return curRepr;
+}
 
-    const char * att;
-    tinyxml2::XMLElement *childURL;
-    if(childURL=element->FirstChildElement("BaseURL")){
+RepresentationBaseType *MPDManager::CreateRepresentationBaseType(tinyxml2::XMLElement *element)
+{
+	RepresentationBaseType *fillRepr = new RepresentationBaseType;
+	element->GETUintAttr(fillRepr,width);
+	element->GETUintAttr(fillRepr,height);
+	element->GETUintAttr(fillRepr,startWithSAP);
 
-        att=childURL->GetText();
-        curRepr->BaseURL.serviceLocation=att;
-    }
-    if(att=element->Attribute("id"))
-        curRepr->id = att;
-    if(att=element->Attribute("dependencyId"))
-        curRepr->dependencyId.push_back(std::string(att));
-    if(att=element->Attribute("mediaStreamStructureId"))
-        curRepr->mediaStreamStructureId.push_back(std::string(att));
-	return NULL; //TODO: change this return!!!!!!!!!
+	element->QueryDoubleAttribute("maximumSAPPeriod",&(fillRepr->maximumSAPPeriod));
+	element->QueryDoubleAttribute("maxPlayoutRate",&(fillRepr->maxPlayoutRate));
+
+	element->QueryBoolAttribute("codingDependency", &(fillRepr->codingDependency));
+
+	const char * att;
+	if(att=element->Attribute("audioSamplingRate"))
+		fillRepr->audioSamplingRate = att;
+	if(att=element->Attribute("mimeType"))
+		fillRepr->mimeType = att;
+	if(att=element->Attribute("segmentProfiles"))
+		fillRepr->segmentProfiles = att;
+	if(att=element->Attribute("codecs"))
+		fillRepr->codecs = att;
+	if(att=element->Attribute("profiles"))
+		fillRepr->profiles = att;
+	if(att=element->Attribute("scanType"))
+		fillRepr->scanType = att;
+	//if(att=element->Attribute("frameRate"))
+		//fillRepr->frameRate.frameRate = att;
+		//***
+	if(att = element->Attribute("sar"))
+		fillRepr->sar = RatioType(std::string(att));
+	return fillRepr;    
 }
 
 EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
@@ -282,65 +355,136 @@ bool MPDManager::ThreadLoop()
 	return true;
 }
 
-/*std::list <AdaptationSet> MPDManager::getAdaptationList()     ??? need to realise the other method - CreateAdaptationSet
-{
-	std::list <AdaptationSet> reslist;
-	XMLHandle dochand(MPDFile);
-
-	dochand = dochand.FirstChildElement("MPD").FirstChildElement("Period").FirstChildElement("AdaptationSet");
-	XMLElement *curNodeSet = dochand.ToElement();
-	while(curNodeSet) {
-		std::cout << "Adaptation found" << std::endl;
-
-		AdaptationSet curSet;
-
-		curNodeSet->GETUintAttr(curSet, id);
-		curNodeSet->GETUintAttr(curSet, group);
-		curNodeSet->GETUintAttr(curSet, minBandwidth);
-		curNodeSet->GETUintAttr(curSet, maxBandwidth);
-		curNodeSet->GETUintAttr(curSet, minWidth);
-		curNodeSet->GETUintAttr(curSet, maxWidth);
-		curNodeSet->GETUintAttr(curSet, minHeight);
-		curNodeSet->GETUintAttr(curSet, maxHeight);
-		curNodeSet->GETUintAttr(curSet, subsegmentStartsWithSAP);
-
-		curNodeSet->QueryBoolAttribute("bitstreamSwitching", &(curSet.bitstreamSwitching));
-		curNodeSet->QueryUnsignedAttribute("segmentAlignment", (unsigned int *) & (curSet.segmentAlignment));
-		curNodeSet->QueryUnsignedAttribute("subsegmentAlignment", (unsigned int *) & (curSet.subsegmentAlignment));
-		//curNodeSet->QueryUnsignedAttribute("lang",(unsigned int *)&(curSet.language));
-		const char *att = 0;
-
-		att = curNodeSet->Attribute("contentType");
-		if(att) {
-			curSet.contentType = att;
-			std::cout << curSet.maxFrameRate.frameRate << std::endl;
+long int MPDManager::getTimeFromDuration(std::string str) {
+	
+	double hours = 0, minutes = 0, seconds = 0;
+	
+	std::string tmp;
+	for(int i = 2; i < str.size(); i++) {
+		
+		tmp = "";
+		for(; (str[i] >= '0' && str[i] <= '9') || str[i] == '.'; i++) {
+			tmp += str[i];
 		}
-
-		att = curNodeSet->Attribute("maxFrameRate");
-		if(att) {
-			curSet.maxFrameRate.frameRate = att;
-			std::cout << curSet.maxFrameRate.frameRate << std::endl;
-		}
-
-
-		att = curNodeSet->Attribute("minFrameRate");
-		if(att) {
-			curSet.minFrameRate.frameRate = att;
-			std::cout << curSet.minFrameRate.frameRate << std::endl;
-		}
-
-		att = curNodeSet->Attribute("par");
-		if(att) {
-			curSet.pictureAspectRatio = RatioType(std::string(att));
-			std::cout << std::string(att) << std::endl;
-		}
-		reslist.push_back(curSet);
-		curNodeSet = curNodeSet->NextSiblingElement("AdaptationSet");
+	
+		if(str[i] == 'H')
+			hours = atof(tmp.c_str());
+		if(str[i] == 'M')
+			minutes = atof(tmp.c_str());
+		if(str[i] == 'S')
+			seconds = atof(tmp.c_str());
+	}	
+	
+	return ((hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000));
+}
+URLType* MPDManager::CreateURlType(tinyxml2::XMLElement*element){
+	URLType *curType= new URLType;
+	if(element->Attribute("sourceURL")) {
+		curType->sourceURL = element->Attribute("sourceURL");
 	}
-	return reslist;
-
-}*/
-
+	if(element->Attribute("range")) {
+		curType->range = element->Attribute("range");
+	}
+	return curType;
+}
+SegmentBaseType* MPDManager::CreateSegmentBaseType(tinyxml2::XMLElement * element){
+	SegmentBaseType * curType= new SegmentBaseType;
+	// default values
+	curType->timescale=1;
+	curType->presentationTimeOffset=0;
+	curType->availabilityTimeComplete=true;
+	element->GETUintAttr(curType,timescale);
+	element->GETUintAttr(curType,timeShiftBufferDepth);	
+	if(element->Attribute("presentationTimeOffset"))
+		curType->presentationTimeOffset=atol(element->Attribute("presentationTimeOffset"));
+	
+	element->QueryDoubleAttribute("availabilityTimeOffset",&(curType->availabilityTimeOffset));
+	element->QueryBoolAttribute("indexRangeExact",&(curType->indexRangeExact));
+	element->QueryBoolAttribute("availabilityTimeComplete",&(curType->availabilityTimeComplete));
+	if(element->Attribute("indexRange")) {
+		curType->indexRange = element->Attribute("indexRange");
+	}
+	if(element->Attribute("timeShiftBufferDepth")) {
+		std::string buf=element->Attribute("timeShiftBufferDepth");
+		curType->timeShiftBufferDepth=getTimeFromDuration(buf);
+	}
+	if(element->Attribute("Initialization")) {
+		curType->Initialization = CreateURlType(element->FirstChildElement("Initialization"));
+	}
+	if(element->Attribute("RepresentationIndex")) {
+		curType->RepresentationIndex = CreateURlType(element->FirstChildElement("RepresentationIndex"));
+	}
+	return curType;
+}
+Stamp *MPDManager::CreateStamp(tinyxml2::XMLElement * element){
+	Stamp *curType= new Stamp;
+	curType->r=0;
+	curType->t=0;
+	
+	if(element->Attribute("t"))
+	 curType->t=atol(element->Attribute("t"));
+	if(element->Attribute("d"))
+	 curType->t=atol(element->Attribute("d"));
+	element->GETUintAttr(curType,r);
+	return curType;
+}
+SegmentTimelineType * MPDManager::CreateSegmentTimelineType(tinyxml2::XMLElement * element){
+	SegmentTimelineType * curType= new SegmentTimelineType;
+	uint32_t startTime=0;
+	for(tinyxml2::XMLElement *node=element->FirstChildElement("S");node;node=node->NextSiblingElement("S")){
+		Stamp* curS=CreateStamp(node);
+		if(curS->t==0) curS->t=startTime;
+		startTime+=curS->d*(curS->r+1);
+		curType->StampSeq.push_back(curS);
+	}
+	return curType;
+}
+MultipleSegmentBaseType *MPDManager::CreateMultipleSegmentBaseType(tinyxml2::XMLElement * element){
+	MultipleSegmentBaseType *curType= new MultipleSegmentBaseType;
+	curType->m_base = CreateSegmentBaseType(element);
+	if(element->FirstChildElement("SegmentTimeline"))
+		curType->SegmentTimeline=CreateSegmentTimelineType(element->FirstChildElement("SegmentTimeline"));
+	if(element->FirstChildElement("BitstreamSwitching"))
+		curType->BitstreamSwitching=CreateURlType(element->FirstChildElement("BitstreamSwitching"));
+	element->GETUintAttr(curType,duration);
+	element->GETUintAttr(curType,startNumber);
+	return curType;
+}
+SegmentTemplateType* MPDManager::CreateSegmentTemplateType(tinyxml2::XMLElement * element){
+	SegmentTemplateType *curType = new SegmentTemplateType;
+	curType->m_base = CreateMultipleSegmentBaseType(element);
+	element->GETUintAttr(curType,index);
+	if(element->Attribute("name"))
+		curType->name=element->Attribute("name");
+	if(element->Attribute("media"))
+		curType->media=element->Attribute("media");
+	if(element->Attribute("initialization"))
+		curType->initialization=element->Attribute("initialization");
+	if(element->Attribute("bitstreamSwitching"))
+		curType->bitstreamSwitching=element->Attribute("bitstreamSwitching");
+	return curType;
+}
+SegmentURLType* MPDManager::CreateSegmentURLType(tinyxml2::XMLElement * element){
+	SegmentURLType* curType= new SegmentURLType;
+	if(element->Attribute("media"))
+		curType->media=element->Attribute("media");
+	if(element->Attribute("mediaRange"))
+		curType->mediaRange=element->Attribute("mediaRange");
+	if(element->Attribute("index"))
+		curType->index=element->Attribute("index");
+	if(element->Attribute("indexRange"))
+		curType->indexRange=element->Attribute("indexRange");
+	return curType; 
+};
+SegmentListType *MPDManager::CreateSegmentListType(tinyxml2::XMLElement * element){
+	SegmentListType* curType= new SegmentListType;
+	curType->m_base=CreateMultipleSegmentBaseType(element);
+	for(tinyxml2::XMLElement *node=element->FirstChildElement("SegmentURL"); node ; node= node->NextSiblingElement("SegmentURL"))
+	{
+		curType->SegmentURLs.push_back(CreateSegmentURLType(node));
+	}
+	return curType;
+}
 // std::list<DASHRepresentation> MPDManager::GetRepresentationList(void)
 // {
 // 	return std::list;

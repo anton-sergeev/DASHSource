@@ -2,51 +2,47 @@
 
 #include <string>
 #include "AdaptationSet.hpp"
-typedef unsigned int ui;
-class RepresentationBaseType
-{
+#include "URLtypes.hpp"
+#include "Segment.hpp"
+
+class RepresentationBaseType {
+
 public:
 	std::string profiles;
-	ui width;
-	ui height;
+	unsigned int width;
+	unsigned int height;
 	RatioType  sar;
-    FrameRateType frameRate;
-    std::string audioSamplingRate;
-    std::string mimeType;
-    std::string segmentProfiles;
-    std::string codecs;
-    double maximumSAPPeriod;
-    ui startWithSAP;// from 0 to 6
-    double maxPlayoutRate;
-    bool codingDependency;
-    std::string scanType;
+	//FrameRateType frameRate;
+    	std::string audioSamplingRate;
+    	std::string mimeType;
+    	std::string segmentProfiles;
+    	std::string codecs;
+    	double maximumSAPPeriod;
+    	unsigned int startWithSAP;// from 0 to 6
+    	double maxPlayoutRate;
+    	bool codingDependency;
+    	std::string scanType;
 };
-struct SubRepresentationType
-{
-    ui level;
-    std::vector <ui> dependencyLevel;
-    ui bandwidth;
-    std::vector<std::string> contentComponent;
+
+struct SubRepresentationType {
+    	unsigned int level;
+    	std::vector<unsigned int> dependencyLevel;
+    	unsigned int bandwidth;
+    	std::vector<std::string> contentComponent;
 };
-struct BaseURLType
-{
-    std::string serviceLocation;
-    std::string byteRange;
-};
-class  Representation: public RepresentationBaseType
-{
+
+struct Representation {
     public:
-    Representation(): RepresentationBaseType()
-    {
-    }
-    BaseURLType BaseURL;
-    SubRepresentationType SubRepresentation;
-    //<xs:element name="SegmentBase" type="SegmentBaseType" minOccurs="0"/>
-    //<xs:element name="SegmentList" type="SegmentListType" minOccurs="0"/>
-    //<xs:element name="SegmentTemplate" type="SegmentTemplateType" minOccurs="0"
-    std::string id;
-    ui bandwidth;
-    ui qualityRanking;
-    std::vector<std::string> dependencyId;
-    std::vector<std::string> mediaStreamStructureId;
+    	RepresentationBaseType *m_base;
+    	std::list<BaseURLType *> BaseURL;
+    	SubRepresentationType SubRepresentation;
+	SegmentBaseType *SegmentBase;
+	SegmentListType *SegmentList;
+	SegmentTemplateType *SegmentTemplate;
+
+    	std::string id;
+    	unsigned int bandwidth;
+    	unsigned int qualityRanking;
+    	std::vector<std::string> dependencyId;
+    	std::vector<std::string> mediaStreamStructureId;
 };
