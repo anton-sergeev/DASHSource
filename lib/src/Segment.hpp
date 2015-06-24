@@ -81,8 +81,8 @@ struct SegmentTemplateType{
 	std::string bitstreamSwitching;
 };
 
-
 struct SegmentListType{
 	MultipleSegmentBaseType * m_base;
 	std::list<SegmentURLType*> SegmentURLs;
 };
+
