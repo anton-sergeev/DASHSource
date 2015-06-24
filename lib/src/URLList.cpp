@@ -20,6 +20,10 @@ void URLList::RemoveUrl(){
 	SegmentURLs.pop_front();
 	hashList.pop_front();
 }
+void URLList::Clear(){
+	SegmentURLs.clear();
+	hashList.clear();
+}
 void URLList::Sync(std::list<std::string> checklist){
 	std::list<std::string>::iterator itURL;
 	if(isEmpty()){
