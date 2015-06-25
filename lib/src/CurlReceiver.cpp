@@ -112,8 +112,35 @@ bool CurlReceiver::Get(std::string url, std::string &content)
 	return res;
 }
 
-bool CurlReceiver::GetAsync(std::string url, void *callbackFunction, std::string &content){
+
+size_t Async_Callback_Function(char* ptr, size_t size, size_t nmemb, IHTTPCallback *callback){
+	size_t m_size = size*nmemb;
+	bool result = callback->ReceivedData(ptr, size);
+	
+	
+	if (!result){
+		m_size = 0;	
+	}
+	return m_size;
+}
+
+bool CurlReceiver::GetAsync(std::string url, IHTTPCallback &callback){
 	bool result = false;
 	
-	return true;	
+	if (m_curl){
+		CURLcode performed;
+		char* m_url = new char[url.size() + 1];
+		std::copy(url.begin(), url.end(), m_url);
+		m_url[url.size()] = '\0';	
+		
+		curl_easy_setopt(m_curl, CURLOPT_URL, m_url);
+		curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, Async_Callback_Function);  
+		curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &callback);		
+		
+		if (curl_easy_perform(m_curl) == 0) {
+			result = true;
+		}
+		delete[] m_url;
+	}	
+	return result;	
 }

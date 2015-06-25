@@ -37,8 +37,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
 class IHTTPCallback
-{
-	virtual bool ReceivedData(uint8_t *ptr, uint32_t size) = 0;
+{	public:
+	virtual bool ReceivedData(char *ptr, size_t size) = 0;
 };
 
 class IHTTPReceiver
@@ -53,7 +53,7 @@ public:
 	virtual bool Release() = 0;
 
 	virtual bool Get(std::string url, std::string &content) = 0;
-	virtual bool GetAsync(std::string url, void *callbackFunction, std::string &content) = 0;
+	virtual bool GetAsync(std::string url, IHTTPCallback &callbackFunction) = 0;
 private:
 // 	IHTTPCallback *m_callback;
 };

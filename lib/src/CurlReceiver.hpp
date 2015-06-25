@@ -48,9 +48,8 @@ public:
 	bool Init();
 	bool Release();
 	bool Get(std::string url, std::string &content);
-	bool GetAsync(std::string url, void *callbackFunction, std::string &content);
+	bool GetAsync(std::string url, IHTTPCallback &callbackFunction);
 
 private:
-	//size_t Callback_Function(void *ptr, size_t size, size_t nmemb, std::string *content);
 	CURL *m_curl;
 };
