@@ -110,3 +110,9 @@ bool CurlReceiver::Get(std::string url, std::string &content)
 	}
 	return res;
 }
+
+bool CurlReceiver::GetAsync(std::string url, char *callbackFunction, std::string &content){
+	bool result = false;
+	
+	return true;	
+}
