@@ -29,10 +29,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
+
 #include "MPDManager.hpp"
 #include <string>
+#include <thread>
 #include "CurlReceiver.hpp"
 #include "IHTTPReceiver.hpp"
+
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
@@ -52,16 +55,14 @@ MPDManager::MPDManager()
 
 MPDManager::~MPDManager()
 {
+
 }
 
 
 bool MPDManager::Start(std::string &url)
 {
-	std::string MPD_content;
 	m_url = url;
-	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
-	curl_receiver -> Init();
-	curl_receiver -> Get(m_url, MPD_content);
+	std::thread thr(&MPDManager::ThreadLoop, this);
 
 	//TO DO Solve problem about start of parsing
 	//std::string filename = "OfForestAndMen.zip"; // For example
@@ -376,6 +377,10 @@ bool MPDManager::ThreadLoop()
 	//  2. parse MPD passing it into tinyxml
 	//  3. fill structures: Representation, Segments, e.g.
 	// }
+	std::string MPD_content;
+	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
+	curl_receiver -> Init();
+	curl_receiver -> Get(m_url, MPD_content);
 
 	return true;
 }

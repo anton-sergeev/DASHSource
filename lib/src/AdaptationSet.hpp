@@ -42,12 +42,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
-//class MPDManager;
 
 struct AdaptationSet
 {
-	// friend MPDManager;
-
 	/* Elements */
 	std::list<BaseURLType *> listBaseURL;
 	std::list<Representation *> listRepresentation;
@@ -56,7 +53,6 @@ struct AdaptationSet
 	SegmentTemplateType *SegmentTemplate;
 
 	/* Atributes */
-
 	RepresentationBaseType *m_base;
 	unsigned int id;
 	unsigned int group;
