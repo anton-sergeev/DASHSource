@@ -47,6 +47,7 @@ public:
 	bool Init();
 	bool Release();
 	bool Get(std::string url, std::string &content);
+	bool GetAsync(std::string url, char *callbackFunction, std::string &content);
 
 private:
 	//size_t Callback_Function(void *ptr, size_t size, size_t nmemb, std::string *content);
