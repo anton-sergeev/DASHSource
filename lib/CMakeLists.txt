@@ -10,8 +10,9 @@ set(SOURCES
   src/DASHSource.cpp
   src/MPDManager.cpp
   src/RatioType.cpp
-  src/tegger.cpp
+  # src/tegger.cpp
   src/URLList.cpp
+  src/UrlAssembler.cpp
 )
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
