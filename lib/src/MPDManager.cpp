@@ -86,31 +86,24 @@ bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 	}
 	if(XMLRootElement->Attribute("profiles")) {
         std::string prof = XMLRootElement->Attribute("profiles");
-        /*switch(prof) {
-            case "urn:mpeg:dash:profile:full:2011":
-                newMPD->profile = eProfiles_full;
-                break;
-                
-            case "urn:mpeg:dash:profile:isoff-on-demand:2011":
-                newMPD->profile = eProfiles_on_demand;
-                break;
-                
-            case "urn:mpeg:dash:profile:isoff-live:2011":
-                newMPD->profile = eProfiles_live;
-                break;
-                
-            case "urn:mpeg:dash:profile:isoff-main:2011":
-                newMPD->profile = eProfiles_main;
-                break;
-                
-            case "urn:mpeg:dash:profile:mp2t-main:2011":
-                newMPD->profile = eProfiles_mpeg_2_ts_main;
-                break;
-                
-            case "urn:mpeg:dash:profile:mp2t-simple:2011":
-                newMPD->profile = eProfiles_mpeg_2_ts_simple;
-                break;
-        } */
+        if (prof == "urn:mpeg:dash:profile:full:2011") {
+            newMPD->profile = eProfiles_full;
+        }
+        else if (prof == "urn:mpeg:dash:profile:isoff-on-demand:2011") {
+            newMPD->profile = eProfiles_on_demand;
+        }
+        else if (prof == "urn:mpeg:dash:profile:isoff-live:2011") {
+            newMPD->profile = eProfiles_live;
+        }
+        else if (prof == "urn:mpeg:dash:profile:isoff-main:2011") {
+            newMPD->profile = eProfiles_main;
+        }
+        else if (prof == "urn:mpeg:dash:profile:mp2t-main:2011") {
+            newMPD->profile = eProfiles_mpeg_2_ts_main;
+        }
+        else if (prof == "urn:mpeg:dash:profile:mp2t-simple:2011") {
+            newMPD->profile = eProfiles_mpeg_2_ts_simple;
+        }
 	}
 	if(XMLRootElement->Attribute("type")) {
 		newMPD->type = XMLRootElement->Attribute("type");
