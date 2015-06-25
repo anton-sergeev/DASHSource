@@ -372,7 +372,26 @@ EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
 
 bool MPDManager::ParseMPD()
 {
+	MPDFile = new tinyxml2::XMLDocument();
+	MPDFile->Parse(MPD_content.c_str());
+	tinyxml2::XMLElement *pElem = MPDFile->RootElement();
 
+	if(!MPDManager::CreateMPDStruct(pElem)) {
+		return false;
+	}
+
+	pElem = pElem->FirstChildElement("Period");
+	Period *newPeriod = MPDManager::CreatePeriod(pElem);
+	pElem = pElem->FirstChildElement("AdaptationSet");
+	AdaptationSet *newAS = MPDManager::CreateAdaptationSet(pElem);
+	pElem = pElem->FirstChildElement("Representation");
+	Representation *newRepr = MPDManager::CreateRepresentation(pElem);
+	pElem = pElem->FirstChildElement("SegmentTemplate");
+	SegmentTemplateType *newSTe = MPDManager::CreateSegmentTemplateType(pElem);
+	pElem = pElem->FirstChildElement("SegmentTimeline");
+	SegmentTimelineType *newSTi = MPDManager::CreateSegmentTimelineType(pElem);
+
+	return true;
 }
 
 bool MPDManager::ThreadLoop()
@@ -389,24 +408,7 @@ bool MPDManager::ThreadLoop()
 
 	if(!MPDManager::IsLive()) {
 		curl_receiver->Get(m_url, MPD_content);
-		MPDFile = new tinyxml2::XMLDocument();
-		MPDFile->Parse(MPD_content.c_str());
-		tinyxml2::XMLElement *pElem = MPDFile->RootElement();
-
-		if(!MPDManager::CreateMPDStruct(pElem)) {
-			return false;
-		}
-
-		pElem = pElem->FirstChildElement("Period");
-		Period *newPeriod = MPDManager::CreatePeriod(pElem);
-		pElem = pElem->FirstChildElement("AdaptationSet");
-		AdaptationSet *newAS = MPDManager::CreateAdaptationSet(pElem);
-		pElem = pElem->FirstChildElement("Representation");
-		Representation *newRepr = MPDManager::CreateRepresentation(pElem);
-		pElem = pElem->FirstChildElement("SegmentTemplate");
-		SegmentTemplateType *newSTe = MPDManager::CreateSegmentTemplateType(pElem);
-		pElem = pElem->FirstChildElement("SegmentTimeline");
-		SegmentTimelineType *newSTi = MPDManager::CreateSegmentTimelineType(pElem);
+		
 
 	} else {
 		while(1) {
