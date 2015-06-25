@@ -52,7 +52,8 @@ public:
 	virtual bool Init() = 0;
 	virtual bool Release() = 0;
 
-	virtual bool Get(std::string url, std::string &callback) = 0;
+	virtual bool Get(std::string url, std::string &content) = 0;
+	virtual bool GetAsync(std::string url, std::string &content) = 0;
 private:
 // 	IHTTPCallback *m_callback;
 };
