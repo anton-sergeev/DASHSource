@@ -85,67 +85,69 @@ bool MPDManager::IsLive(){
 bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 	if(!XMLRootElement)
 		return false;
-	MPD *newMPD = new MPD;
+	
+	mpd = new MPD;
+
 	if(XMLRootElement->Attribute("id")) {
-		newMPD->id = XMLRootElement->Attribute("id");
+		mpd->id = XMLRootElement->Attribute("id");
 	}
 	if(XMLRootElement->Attribute("profiles")) {
         std::string prof = XMLRootElement->Attribute("profiles");
         if (prof == "urn:mpeg:dash:profile:full:2011") {
-            newMPD->profile = eProfiles_full;
+            mpd->profile = eProfiles_full;
         }
         else if (prof == "urn:mpeg:dash:profile:isoff-on-demand:2011") {
-            newMPD->profile = eProfiles_on_demand;
+            mpd->profile = eProfiles_on_demand;
         }
         else if (prof == "urn:mpeg:dash:profile:isoff-live:2011") {
-            newMPD->profile = eProfiles_live;
+            mpd->profile = eProfiles_live;
         }
         else if (prof == "urn:mpeg:dash:profile:isoff-main:2011") {
-            newMPD->profile = eProfiles_main;
+            mpd->profile = eProfiles_main;
         }
         else if (prof == "urn:mpeg:dash:profile:mp2t-main:2011") {
-            newMPD->profile = eProfiles_mpeg_2_ts_main;
+            mpd->profile = eProfiles_mpeg_2_ts_main;
         }
         else if (prof == "urn:mpeg:dash:profile:mp2t-simple:2011") {
-            newMPD->profile = eProfiles_mpeg_2_ts_simple;
+            mpd->profile = eProfiles_mpeg_2_ts_simple;
         }
 	}
 	if(XMLRootElement->Attribute("type")) {
-		newMPD->type = XMLRootElement->Attribute("type");
+		mpd->type = XMLRootElement->Attribute("type");
 	}
 	if(XMLRootElement->Attribute("availabilityStartTime")) {
-		newMPD->availabilityStartTime = XMLRootElement->Attribute("availabilityStartTime");
+		mpd->availabilityStartTime = XMLRootElement->Attribute("availabilityStartTime");
 	}
 	if(XMLRootElement->Attribute("availabilityEndTime")) {
-		newMPD->availabilityEndTime = XMLRootElement->Attribute("availabilityEndTime");
+		mpd->availabilityEndTime = XMLRootElement->Attribute("availabilityEndTime");
 	}
 	if(XMLRootElement->Attribute("publishTime")) {
-		newMPD->publishTime = XMLRootElement->Attribute("publishTime");
+		mpd->publishTime = XMLRootElement->Attribute("publishTime");
 	}
 	if(XMLRootElement->Attribute("mediaPresentationDuration")) {
-		newMPD->mediaPresentationDuration = getTimeFromDuration(XMLRootElement->Attribute("mediaPresentationDuration"));
+		mpd->mediaPresentationDuration = getTimeFromDuration(XMLRootElement->Attribute("mediaPresentationDuration"));
 	}
 	if(XMLRootElement->Attribute("minimumUpdatePeriod")) {
-		newMPD->minimumUpdatePeriod = getTimeFromDuration(XMLRootElement->Attribute("minimumUpdatePeriod"));
+		mpd->minimumUpdatePeriod = getTimeFromDuration(XMLRootElement->Attribute("minimumUpdatePeriod"));
 	}
 	if(XMLRootElement->Attribute("minBufferTime")) {
-		newMPD->minBufferTime = getTimeFromDuration(XMLRootElement->Attribute("minBufferTime"));
+		mpd->minBufferTime = getTimeFromDuration(XMLRootElement->Attribute("minBufferTime"));
 	}
 	if(XMLRootElement->Attribute("timeShiftBufferDepth")) {
-		newMPD->timeShiftBufferDepth = getTimeFromDuration(XMLRootElement->Attribute("timeShiftBufferDepth"));
+		mpd->timeShiftBufferDepth = getTimeFromDuration(XMLRootElement->Attribute("timeShiftBufferDepth"));
 	}
 	if(XMLRootElement->Attribute("suggestedPresentationDelay")) {
-		newMPD->suggestedPresentationDelay = getTimeFromDuration(XMLRootElement->Attribute("suggestedPresentationDelay"));
+		mpd->suggestedPresentationDelay = getTimeFromDuration(XMLRootElement->Attribute("suggestedPresentationDelay"));
 	}
 	if(XMLRootElement->Attribute("maxSegmentDuration")) {
-		newMPD->maxSegmentDuration = getTimeFromDuration(XMLRootElement->Attribute("maxSegmentDuration"));
+		mpd->maxSegmentDuration = getTimeFromDuration(XMLRootElement->Attribute("maxSegmentDuration"));
 	}
 	if(XMLRootElement->Attribute("maxSubsegmentDuration")) {
-		newMPD->maxSubsegmentDuration = getTimeFromDuration(XMLRootElement->Attribute("maxSubsegmentDuration"));
+		mpd->maxSubsegmentDuration = getTimeFromDuration(XMLRootElement->Attribute("maxSubsegmentDuration"));
 	}
 	for(tinyxml2::XMLElement *child_element = XMLRootElement->FirstChildElement("Period"); child_element; child_element = child_element->NextSiblingElement("Period")) {
 		Period *newPeriod = CreatePeriod(child_element);
-		newMPD->period.push_back(newPeriod);
+		mpd->period.push_back(newPeriod);
 	}
 	for(tinyxml2::XMLElement *child_element = XMLRootElement->FirstChildElement("BaseURL"); child_element; child_element = child_element->NextSiblingElement("BaseURL")) {
 		BaseURLType *newBaseURL = new BaseURLType;
@@ -155,7 +157,7 @@ bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 		if(child_element->Attribute("byteRange"))
 			newBaseURL->byteRange = child_element->Attribute("byteRange");
 		newBaseURL->URL = child_element->GetText();
-		newMPD->listBaseURL.push_back(newBaseURL);
+		mpd->listBaseURL.push_back(newBaseURL);
 	}
 	return true;
 }
@@ -368,6 +370,11 @@ EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
 	return newEventStream;
 }
 
+bool MPDManager::ParseMPD()
+{
+
+}
+
 bool MPDManager::ThreadLoop()
 {
 	// loop {
@@ -375,10 +382,38 @@ bool MPDManager::ThreadLoop()
 	//  2. parse MPD passing it into tinyxml
 	//  3. fill structures: Representation, Segments, e.g.
 	// }
+
 	std::string MPD_content;
 	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
-	curl_receiver -> Init();
-	curl_receiver -> Get(m_url, MPD_content);
+	curl_receiver->Init();
+
+	if(!MPDManager::IsLive()) {
+		curl_receiver->Get(m_url, MPD_content);
+		MPDFile = new tinyxml2::XMLDocument();
+		MPDFile->Parse(MPD_content.c_str());
+		tinyxml2::XMLElement *pElem = MPDFile->RootElement();
+
+		if(!MPDManager::CreateMPDStruct(pElem)) {
+			return false;
+		}
+
+		pElem = pElem->FirstChildElement("Period");
+		Period *newPeriod = MPDManager::CreatePeriod(pElem);
+		pElem = pElem->FirstChildElement("AdaptationSet");
+		AdaptationSet *newAS = MPDManager::CreateAdaptationSet(pElem);
+		pElem = pElem->FirstChildElement("Representation");
+		Representation *newRepr = MPDManager::CreateRepresentation(pElem);
+		pElem = pElem->FirstChildElement("SegmentTemplate");
+		SegmentTemplateType *newSTe = MPDManager::CreateSegmentTemplateType(pElem);
+		pElem = pElem->FirstChildElement("SegmentTimeline");
+		SegmentTimelineType *newSTi = MPDManager::CreateSegmentTimelineType(pElem);
+
+	} else {
+		while(1) {
+			//curl_receiver -> Get(m_url, MPD_content);
+
+		}
+	}
 
 	return true;
 }

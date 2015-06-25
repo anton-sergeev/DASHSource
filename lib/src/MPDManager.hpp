@@ -71,8 +71,10 @@ public:
 	SegmentListType* CreateSegmentListType(tinyxml2::XMLElement *);
 
 private:
+	bool ParseMPD();
 	bool ThreadLoop();
 	long int getTimeFromDuration(std::string str);
+	MPD *mpd;
 // 	std::list<DASHRepresentation> GetRepresentationList(void);
 	std::string m_url;
 	tinyxml2::XMLDocument *MPDFile;
