@@ -62,7 +62,7 @@ MPDManager::~MPDManager()
 bool MPDManager::Start(std::string &url)
 {
 	m_url = url;
-	std::thread thr(&MPDManager::ThreadLoop, this);
+	m_thr = new std::thread(&MPDManager::ThreadLoop, this);
 
 	//TO DO Solve problem about start of parsing
 	//std::string filename = "OfForestAndMen.zip"; // For example

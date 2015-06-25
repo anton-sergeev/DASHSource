@@ -41,6 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Segment.hpp"
 #include "MPDStruct.hpp"
 #include <stdlib.h>
+#include <thread>
 
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
@@ -75,6 +76,7 @@ private:
 	long int getTimeFromDuration(std::string str);
 // 	std::list<DASHRepresentation> GetRepresentationList(void);
 	std::string m_url;
+	std::thread *m_thr;
 	tinyxml2::XMLDocument *MPDFile;
 //
 };
