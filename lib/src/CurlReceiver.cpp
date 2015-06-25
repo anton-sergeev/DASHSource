@@ -106,12 +106,13 @@ bool CurlReceiver::Get(std::string url, std::string &content)
 		if (curl_easy_perform(m_curl) == 0) {
 			res = true;
 		}
+		
 		delete[] m_url;
 	}
 	return res;
 }
 
-bool CurlReceiver::GetAsync(std::string url, char *callbackFunction, std::string &content){
+bool CurlReceiver::GetAsync(std::string url, void *callbackFunction, std::string &content){
 	bool result = false;
 	
 	return true;	

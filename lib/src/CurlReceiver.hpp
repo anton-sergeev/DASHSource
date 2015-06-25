@@ -29,9 +29,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
-#include <string>
 #include "IHTTPReceiver.hpp"
 #include "curl.h"
+#include <thread>
+#include <string>
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
@@ -47,7 +48,7 @@ public:
 	bool Init();
 	bool Release();
 	bool Get(std::string url, std::string &content);
-	bool GetAsync(std::string url, char *callbackFunction, std::string &content);
+	bool GetAsync(std::string url, void *callbackFunction, std::string &content);
 
 private:
 	//size_t Callback_Function(void *ptr, size_t size, size_t nmemb, std::string *content);
