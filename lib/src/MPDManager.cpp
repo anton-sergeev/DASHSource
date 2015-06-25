@@ -77,6 +77,11 @@ bool MPDManager::Stop()
 	return true;
 }
 
+bool MPDManager::IsLive(){
+	//if stream is live
+	return true;
+}
+
 bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 	if(!XMLRootElement)
 		return false;

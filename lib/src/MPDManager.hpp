@@ -54,6 +54,7 @@ public:
 	bool Start(std::string &url);
 	bool Stop();
 	bool CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement);
+	bool IsLive();
 
 	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
 	Period *CreatePeriod(tinyxml2::XMLElement *element);
