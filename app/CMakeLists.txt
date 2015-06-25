@@ -20,16 +20,24 @@ link_directories(
 	${tiny_bin}
 )
 
+set(LIBS
+	DASHSourceLib
+	tinyxml2
+)
+
 if(MSVC)
-	set(LIBCURL libcurl_imp)
+	set(LIBS ${LIBS}
+		libcurl_imp
+	)
 else()
-	set(LIBCURL curl)
+	set(LIBS ${LIBS}
+		curl
+		pthread
+	)
 endif()
 
 add_executable(${PROJECT} ${SOURCES})
 target_link_libraries(${PROJECT}
-	DASHSourceLib
-	${LIBCURL}
-	tinyxml2
+	${LIBS}
 )
 set_target_properties(${PROJECT} PROPERTIES OUTPUT_NAME dashsrc_test)
