@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Representation.hpp"
 #include "Segment.hpp"
 #include "MPDStruct.hpp"
+
 #define sz(x) int(x.size())
 /******************************************************************
 * LOCAL TYPEDEFS                                                    *
@@ -49,7 +50,7 @@ public:
 	string tegChange(string);
 	void setTeg(string name, string value);
 	void clear();
-	void assembleURLs(MPDStruct::MPD *);
+	void assembleURLs(MPD *);
 private:
 	map <uint64_t, string> dict;
 	uint64_t cash(string);

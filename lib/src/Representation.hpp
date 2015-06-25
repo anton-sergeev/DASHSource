@@ -30,7 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string>
 #include "FrameRate.hpp"
-#include "AdaptationSet.hpp"
+// #include "AdaptationSet.hpp"
+#include "RatioType.hpp"
 #include "URLtypes.hpp"
 #include "Segment.hpp"
 

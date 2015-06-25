@@ -54,47 +54,47 @@ std::string UrlAssembler::tegChange(string str)
 	return res;
 }
 
-void UrlAssembler::AssembleURLs(MPDStruct::MPD* mpd)
+void UrlAssembler::assembleURLs(MPD* mpd)
 {
 	//if baseURL
 	{
 		std::list<Period *>::iterator currentPeriod;
-		for(currentPeriod = mpd.period.begin(); currentPeriod != mpd.period.end(); currentPeriod++)
+		for(currentPeriod = mpd->period.begin(); currentPeriod != mpd->period.end(); currentPeriod++)
 		{
-			if(!currentPeriod.empty())
-			{
-				std::list<AdaptationSet *>::iterator currentASet;
-				for(currentASet = mpd.period.begin(); currentASet != mpd.period.end(); currentASet++)
-				{
-					if(currentASet.empty())
-					{
-						std::list<Representation *>::iterator currentRepres;
-						for(currentRepres = mpd.period.begin(); currentRepres != mpd.period.end(); currentRepres++)
-						{
-							if(!currentRepres.empty())
-							{
-
-							}
-							else
-							{
-								string newUrl = new string(mpd.listBaseUrl.begin().URL + currentPeriod.listBaseUrl.begin().URL + currentRepres.listBaseUrl.begin().URL);
-								//URLList::AddURL(newURL);
-							}
-						}
-					}
-					else
-					{
-						string newUrl = new string(mpd.listBaseUrl.begin().URL + currentPeriod.listBaseUrl.begin().URL);
-						//URLList::AddURL(newURL);
-					}
-					
-				}
-			}
-			else
-			{
-				//error -> invalid mpd
-			}
-			
+// 			if(!currentPeriod.empty())
+// 			{
+// 				std::list<AdaptationSet *>::iterator currentASet;
+// 				for(currentASet = mpd->period.begin(); currentASet != mpd->period.end(); currentASet++)
+// 				{
+// 					if(currentASet.empty())
+// 					{
+// 						std::list<Representation *>::iterator currentRepres;
+// 						for(currentRepres = mpd->period.begin(); currentRepres != mpd->period.end(); currentRepres++)
+// 						{
+// 							if(!currentRepres.empty())
+// 							{
+// 
+// 							}
+// 							else
+// 							{
+// 								string newUrl = new string(mpd->listBaseUrl.begin().URL + currentPeriod.listBaseUrl.begin().URL + currentRepres.listBaseUrl.begin().URL);
+// 								//URLList::AddURL(newURL);
+// 							}
+// 						}
+// 					}
+// 					else
+// 					{
+// 						string newUrl = new string(mpd->listBaseUrl.begin().URL + currentPeriod.listBaseUrl.begin().URL);
+// 						//URLList::AddURL(newURL);
+// 					}
+// 					
+// 				}
+// 			}
+// 			else
+// 			{
+// 				//error -> invalid mpd
+// 			}
+// 			
 		}
 	}
 }
