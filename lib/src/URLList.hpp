@@ -30,16 +30,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <list>
 #include <cstdint>
-class URLList{
+
+typedef struct SegmentComplexType {
+	std::string sURL;
+	uint64_t hash;
+	bool flag;
+} SegmentComplexType;
+
+class URLList {
 	public:
 	bool isEmpty();
 	void AddURL(std::string); // in tail
 	void RemoveUrl(); // from head
 	void Clear();
-	void Sync(std::list < std::string > );
+	void Sync(std::list <SegmentComplexType> );
+	std::list<SegmentComplexType> listURL;
 	private:
 	uint64_t getHash(std::string);
-	std::list<uint64_t> hashList;
-	std::list<std::string> SegmentURLs;
 };
+URLList *g_URLList;
 #endif

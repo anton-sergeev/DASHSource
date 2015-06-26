@@ -56,6 +56,7 @@ bool DASHSource::Start(std::string &url)
 		m_mpd_manager = new MPDManager();
 	}
 	m_mpd_manager->Start(url);
+	m_thread = new std::thread(&DASHSource::ThreadLoop, this);
 	return true;
 }
 
@@ -70,6 +71,7 @@ bool DASHSource::Stop()
 		delete m_mpd_manager;
 		m_mpd_manager = nullptr;
 	}
+	m_thread->join();
 	return true;
 }
 
@@ -87,6 +89,7 @@ bool DASHSource::GetProperty(DASHSourceProperty_e type, void *)
 {
 	return true;
 }
+
 bool DASHSource::SwitchUp(uint64_t bitrate){
   auto NextRepresentation = ++curRepresentation;
   if(NextRepresentation != Representationlist.end() && NextRepresentation->bandwidth < bitrate){
@@ -131,4 +134,26 @@ bool DASHSource::DownloadSegment(std::string URL,uint32_t size){
   if(!curSegment) return false;
   m_curl_receiver->GetAsync(URL,*((IHTTPCallback*)this)); // This is C, not C++ 
   return true;
+}
+void DASHSource::ThreadLoop() {
+	std::string str;
+	while(true) {
+		sleep(1); //???
+		str = GetNewURL();
+		if(str != "") {
+			/* call method for download segment, written by Anton */
+      // DownloadSegment(str, size!!!!);
+		}
+	}
+}
+
+std::string DASHSource::GetNewURL() {
+	std::list<SegmentComplexType>::iterator itURL;
+	for(itURL = g_URLList->listURL.begin(); itURL != g_URLList->listURL.end(); ++itURL) {
+		if(!itURL->flag) {
+			itURL->flag = true;
+			return itURL->sURL;
+		}
+	}
+	return "";
 }
