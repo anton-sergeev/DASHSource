@@ -87,3 +87,48 @@ bool DASHSource::GetProperty(DASHSourceProperty_e type, void *)
 {
 	return true;
 }
+bool DASHSource::SwitchUp(uint64_t bitrate){
+  auto NextRepresentation = ++curRepresentation;
+  if(NextRepresentation != Representationlist.end() && NextRepresentation->bandwidth < bitrate){
+    curRepresentation = NextRepresentation;
+    return true;
+  }
+  return false;
+}
+bool DASHSource::SwitchDown(uint64_t bitrate){
+  if(curRepresentation == Representationlist.begin())
+    return false;
+  curRepresentation = --curRepresentation;  
+  return true;
+}
+bool DASHSource::ReceivedData(char *ptr, size_t size){
+  Clock::time_point newPoint = Clock::now();
+  uint64_t time = std::chrono::duration_cast<std::chrono::milliseconds>(newPoint - lastp).count();
+  lastp = newPoint;
+  uint64_t myBitStream=(size*8*1000)/time; //bit per second
+  uint64_t NecessarySize = (time * curRepresentation->bandwidth)/( 1000 * 8 ); // bandwidth = bits/sec
+  bool isOkay = true;
+  if(NecessarySize < size)
+      isOkay = !(SwitchUp(myBitStream));
+    else
+      isOkay = !(SwitchDown(myBitStream));
+  if(isOkay){
+        memcpy(curSegment+curByte,ptr,size);
+        curByte += size;
+        return true;
+  }      
+    else{
+        curByte = 0;
+        //free(curSegment);
+        return false;
+      }
+  return true;
+}
+bool DASHSource::DownloadSegment(std::string URL,uint32_t size){
+  lastp = Clock::now();
+  curSegment = (uint8_t *)std::malloc(size);
+  curByte = 0;
+  if(!curSegment) return false;
+  m_curl_receiver->GetAsync(URL,*((IHTTPCallback*)this)); // This is C, not C++ 
+  return true;
+}
