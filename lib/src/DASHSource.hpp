@@ -33,6 +33,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "IDASHSource.hpp"
 #include "MPDManager.hpp"
+#include <thread>
+#include <unistd.h>
+#include "URLList.hpp"
 
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
@@ -50,8 +53,12 @@ public:
 
 	virtual bool SetProperty(DASHSourceProperty_e type, void *);
 	virtual bool GetProperty(DASHSourceProperty_e type, void *);
+	
+	void ThreadLoop();
+	std::string GetNewURL();
 
 private:
 	MPDManager *m_mpd_manager;
+	std::thread *m_thread;
 // 	std::string m_url;
 };
