@@ -56,9 +56,6 @@ public:
 	
 	void ThreadLoop();
 	std::string GetNewURL();
-
-private:
-	MPDManager *m_mpd_manager;
 	std::thread *m_thread;
 // 	std::string m_url;
 };
