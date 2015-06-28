@@ -30,7 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * INCLUDE FILES                                                   *
 *******************************************************************/
 #include "DASHSource.hpp"
-
 /******************************************************************
 * FUNCTION IMPLEMENTATION                     <Module>_<Word>+    *
 *******************************************************************/
@@ -93,7 +92,11 @@ bool DASHSource::GetProperty(DASHSourceProperty_e type, void *)
 void DASHSource::ThreadLoop() {
 	std::string str;
 	while(true) {
-		sleep(1); //???
+		#ifdef WIN32
+		Sleep(1); //???
+		#else
+		sleep(1);
+		#endif		
 		str = GetNewURL();
 		if(str != "") {
 			/* call method for download segment, written by Anton */

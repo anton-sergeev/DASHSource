@@ -34,7 +34,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "IDASHSource.hpp"
 #include "MPDManager.hpp"
 #include <thread>
+#ifdef WIN32
+#include <windows.h>
+#else
 #include <unistd.h>
+#endif
+#include <Windows.h>
 #include "URLList.hpp"
 
 /******************************************************************
