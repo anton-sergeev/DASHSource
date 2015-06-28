@@ -54,9 +54,9 @@ public:
 
 	bool Start(std::string &url);
 	bool Stop();
-	bool CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement);
 	bool IsLive();
 
+	MPD *CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement);
 	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
 	Period *CreatePeriod(tinyxml2::XMLElement *element);
 	AdaptationSet *CreateAdaptationSet(tinyxml2::XMLElement *element);
@@ -74,6 +74,7 @@ public:
 private:
 	bool ThreadLoop();
 	long int getTimeFromDuration(std::string str);
+	MPD *MPDStruct;
 // 	std::list<DASHRepresentation> GetRepresentationList(void);
 	std::string m_url;
 	std::thread *m_thr;

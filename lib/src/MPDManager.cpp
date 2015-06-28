@@ -78,13 +78,15 @@ bool MPDManager::Stop()
 }
 
 bool MPDManager::IsLive(){
-	//if stream is live
+	if (!MPDStruct || MPDStruct->type == "static"){
+		return false;
+	}
 	return true;
 }
 
-bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
+MPD *MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 	if(!XMLRootElement)
-		return false;
+		return NULL;
 	MPD *newMPD = new MPD;
 	if(XMLRootElement->Attribute("id")) {
 		newMPD->id = XMLRootElement->Attribute("id");
@@ -157,7 +159,8 @@ bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 		newBaseURL->URL = child_element->GetText();
 		newMPD->listBaseURL.push_back(newBaseURL);
 	}
-	return true;
+	MPDStruct = newMPD;
+	return newMPD;
 }
 
 Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
