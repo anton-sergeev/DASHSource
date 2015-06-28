@@ -61,40 +61,40 @@ void UrlAssembler::assembleURLs(MPD* mpd)
 		std::list<Period *>::iterator currentPeriod;
 		for(currentPeriod = mpd->period.begin(); currentPeriod != mpd->period.end(); currentPeriod++)
 		{
-// 			if(!currentPeriod.empty())
-// 			{
-// 				std::list<AdaptationSet *>::iterator currentASet;
-// 				for(currentASet = mpd->period.begin(); currentASet != mpd->period.end(); currentASet++)
-// 				{
-// 					if(currentASet.empty())
-// 					{
-// 						std::list<Representation *>::iterator currentRepres;
-// 						for(currentRepres = mpd->period.begin(); currentRepres != mpd->period.end(); currentRepres++)
-// 						{
-// 							if(!currentRepres.empty())
-// 							{
-// 
-// 							}
-// 							else
-// 							{
-// 								string newUrl = new string(mpd->listBaseUrl.begin().URL + currentPeriod.listBaseUrl.begin().URL + currentRepres.listBaseUrl.begin().URL);
-// 								//URLList::AddURL(newURL);
-// 							}
-// 						}
-// 					}
-// 					else
-// 					{
-// 						string newUrl = new string(mpd->listBaseUrl.begin().URL + currentPeriod.listBaseUrl.begin().URL);
-// 						//URLList::AddURL(newURL);
-// 					}
-// 					
-// 				}
-// 			}
-// 			else
-// 			{
-// 				//error -> invalid mpd
-// 			}
-// 			
+			if(!((*currentPeriod)->adaptationset.empty()))
+			{
+				std::list<AdaptationSet *>::iterator currentASet;
+				for(currentASet = (*currentPeriod)->adaptationset.begin(); currentASet != (*currentPeriod)->adaptationset.end(); currentASet++)
+				{
+					if(!((*currentASet)->listRepresentation.empty()))
+					{
+						std::list<Representation *>::iterator currentRepres;
+						for(currentRepres = (*currentASet)->listRepresentation.begin(); currentRepres != (*currentASet)->listRepresentation.end(); currentRepres++)
+						{
+							//if(!((*currentRepres)->SegmentList.empty()))  //проверить на пустоту сегментов
+							// {
+
+							// }
+							// else
+							// {
+							// 	//string newUrl = new string(mpd->listBaseUrl.begin().URL + currentPeriod->listBaseUrl.begin().URL + currentRepres->listBaseUrl.begin().URL);
+							// 	//URLList::AddURL(newURL);
+							// }
+						}
+					}
+					else
+					{
+						string newUrl((*(mpd->listBaseURL.begin()))->URL + (*((*currentPeriod)->listBaseURL.begin()))->URL);
+						//URLList::AddURL(newURL);
+					}
+					
+				}
+			}
+			// else
+			// {
+			// 	//error -> invalid mpd
+			// }
+			
 		}
 	}
 }

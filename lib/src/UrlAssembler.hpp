@@ -36,6 +36,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Representation.hpp"
 #include "Segment.hpp"
 #include "MPDStruct.hpp"
+#include "Period.hpp"
+#include "AdaptationSet.hpp"
+//#include "list"
 
 #define sz(x) int(x.size())
 /******************************************************************
