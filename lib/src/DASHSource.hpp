@@ -39,7 +39,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 #include <unistd.h>
 #endif
-#include <Windows.h>
 #include "URLList.hpp"
 
 /******************************************************************
