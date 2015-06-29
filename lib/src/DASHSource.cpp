@@ -115,7 +115,7 @@ bool DASHSource::ReceivedData(char *ptr, size_t size){
     else
       isOkay = !(SwitchDown(myBitStream));
   if(isOkay){
-        memcpy(curSegment+curByte,ptr,size);
+        //memcpy(curSegment+curByte,ptr,size); TO DO
         curByte += size;
         return true;
   }      
@@ -126,9 +126,9 @@ bool DASHSource::ReceivedData(char *ptr, size_t size){
       }
   return true;
 }
-bool DASHSource::DownloadSegment(std::string URL,uint32_t size){
+bool DASHSource::DownloadSegment(std::string URL){
   lastp = Clock::now();
-  curSegment = (uint8_t *)std::malloc(size);
+  //curSegment = (uint8_t *)std::malloc(size);
   curByte = 0;
   if(!curSegment) return false;
   m_curl_receiver->GetAsync(URL,*((IHTTPCallback*)this)); // This is C, not C++ 
@@ -145,7 +145,7 @@ void DASHSource::ThreadLoop() {
 		str = GetNewURL();
 		if(str != "") {
 			/* call method for download segment, written by Anton */
-      // DownloadSegment(str, size!!!!);
+      			DownloadSegment(str);
 		}
 	}
 }

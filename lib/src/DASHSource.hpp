@@ -61,7 +61,7 @@ public:
 
 	virtual bool SetProperty(DASHSourceProperty_e type, void *);
 	virtual bool GetProperty(DASHSourceProperty_e type, void *);
-  bool DownloadSegment(std::string URL, uint32_t size);
+  bool DownloadSegment(std::string URL);
   bool ReceivedData(char *ptr, size_t size);
   bool SwitchUp(uint64_t bitrate);
   bool SwitchDown(uint64_t bitrate);
