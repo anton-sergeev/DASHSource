@@ -40,6 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Period.hpp"
 #include "Segment.hpp"
 #include "MPDStruct.hpp"
+#include "URLList.hpp"
+#include "IHTTPReceiver.hpp"
 #include <stdlib.h>
 
 /******************************************************************
@@ -71,7 +73,8 @@ public:
 	SegmentListType* CreateSegmentListType(tinyxml2::XMLElement *);
 
 private:
-	bool ParseMPD();
+	static URLList urlList;
+	bool ParseMPD(std::string &);
 	bool ThreadLoop();
 	long int getTimeFromDuration(std::string str);
 	MPD *mpd;
