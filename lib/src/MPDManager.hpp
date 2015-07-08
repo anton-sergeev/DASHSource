@@ -58,6 +58,7 @@ public:
 	bool CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement);
 	bool IsLive();
 
+private:
 	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
 	Period *CreatePeriod(tinyxml2::XMLElement *element);
 	AdaptationSet *CreateAdaptationSet(tinyxml2::XMLElement *element);
@@ -72,14 +73,16 @@ public:
 	SegmentTemplateType* CreateSegmentTemplateType(tinyxml2::XMLElement *);
 	SegmentListType* CreateSegmentListType(tinyxml2::XMLElement *);
 
-private:
 	static URLList urlList;
-	bool ParseMPD(std::string &);
+	bool GetMPD(IHTTPReceiver *);
 	bool ThreadLoop();
 	long int getTimeFromDuration(std::string str);
+
+private:
 	MPD *mpd;
 // 	std::list<DASHRepresentation> GetRepresentationList(void);
 	std::string m_url;
 	tinyxml2::XMLDocument *MPDFile;
+	bool m_alive;
 //
 };

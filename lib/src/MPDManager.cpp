@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MPDManager.hpp"
 #include <string>
 #include <thread>
+#include <unistd.h>//sleep(), need to replace by portable analog
 #include "CurlReceiver.hpp"
 #include "IHTTPReceiver.hpp"
 
@@ -62,6 +63,7 @@ MPDManager::~MPDManager()
 bool MPDManager::Start(std::string &url)
 {
 	m_url = url;
+	m_alive = true;
 	std::thread thr(&MPDManager::ThreadLoop, this);
 
 	//TO DO Solve problem about start of parsing
@@ -74,6 +76,7 @@ bool MPDManager::Start(std::string &url)
 bool MPDManager::Stop()
 {
 	//stop thread
+	m_alive = false;
 	return true;
 }
 
@@ -370,54 +373,46 @@ EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
 	return newEventStream;
 }
 
-bool MPDManager::ParseMPD(std::string &MPD_content)
+bool MPDManager::GetMPD(IHTTPReceiver *http_receiver)
 {
+	std::string MPD_content;
+
+	//  1. get MPD via IHTTPReceiver
+	//  2. parse MPD passing it into tinyxml
+	//  3. fill structures: Representation, Segments, e.g.
+	http_receiver->Get(m_url, MPD_content);
 	MPDFile = new tinyxml2::XMLDocument();
 	MPDFile->Parse(MPD_content.c_str());
-	tinyxml2::XMLElement *pElem = MPDFile->RootElement();
 
-	if(!MPDManager::CreateMPDStruct(pElem)) {
+	if(!CreateMPDStruct(MPDFile->RootElement())) {
 		return false;
 	}
 
-	//MPDManager::mpd
+	delete MPDFile;
 
 	return true;
 }
 
 bool MPDManager::ThreadLoop()
 {
-	// loop {
-	//  1. get MPD via IHTTPReceiver
-	//  2. parse MPD passing it into tinyxml
-	//  3. fill structures: Representation, Segments, e.g.
-	// }
-
-	std::string MPD_content;
-	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
+	IHTTPReceiver *curl_receiver = IHTTPReceiver::Instance();
 	curl_receiver->Init();
 
 	if(!MPDManager::IsLive()) {
-		curl_receiver->Get(m_url, MPD_content);
-
-		if(!MPDManager::ParseMPD(MPD_content)) {
+		if(!GetMPD(curl_receiver)) {
 			return false;
 		}
-
-		// sync
-		///// all three actions to one method !!!
 	} else {
-		while(true) {
-			curl_receiver->Get(m_url, MPD_content);
-
-		if(!MPDManager::ParseMPD(MPD_content)) {
-			return false;
-		}
-
-		// sync
+		while(m_alive) {
+			if(!GetMPD(curl_receiver)) {
+				return false;
+			}
+			//TODO: here should be paause described in mpd, temporary 1s now
+			sleep(1);
 		}
 	}
 
+	curl_receiver->Release();
 	return true;
 }
 
