@@ -30,7 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * INCLUDE FILES                                                   *
 *******************************************************************/
 #include "DASHSource.hpp"
-
 /******************************************************************
 * FUNCTION IMPLEMENTATION                     <Module>_<Word>+    *
 *******************************************************************/
@@ -56,6 +55,7 @@ bool DASHSource::Start(std::string &url)
 		m_mpd_manager = new MPDManager();
 	}
 	m_mpd_manager->Start(url);
+	m_thread = new std::thread(&DASHSource::ThreadLoop, this);
 	return true;
 }
 
@@ -70,6 +70,7 @@ bool DASHSource::Stop()
 		delete m_mpd_manager;
 		m_mpd_manager = nullptr;
 	}
+	m_thread->join();
 	return true;
 }
 
@@ -86,4 +87,76 @@ bool DASHSource::SetProperty(DASHSourceProperty_e type, void *)
 bool DASHSource::GetProperty(DASHSourceProperty_e type, void *)
 {
 	return true;
+}
+
+bool DASHSource::SwitchUp(uint64_t bitrate){
+  auto NextRepresentation = ++curRepresentation;
+  if(NextRepresentation != Representationlist.end() && NextRepresentation->bandwidth < bitrate){
+    curRepresentation = NextRepresentation;
+    return true;
+  }
+  return false;
+}
+bool DASHSource::SwitchDown(uint64_t bitrate){
+  if(curRepresentation == Representationlist.begin())
+    return false;
+  curRepresentation = --curRepresentation;  
+  return true;
+}
+bool DASHSource::ReceivedData(char *ptr, size_t size){
+  Clock::time_point newPoint = Clock::now();
+  uint64_t time = std::chrono::duration_cast<std::chrono::milliseconds>(newPoint - lastp).count();
+  lastp = newPoint;
+  uint64_t myBitStream=(size*8*1000)/time; //bit per second
+  uint64_t NecessarySize = (time * curRepresentation->bandwidth)/( 1000 * 8 ); // bandwidth = bits/sec
+  bool isOkay = true;
+  if(NecessarySize < size)
+      isOkay = !(SwitchUp(myBitStream));
+    else
+      isOkay = !(SwitchDown(myBitStream));
+  if(isOkay){
+        //memcpy(curSegment+curByte,ptr,size); TO DO
+        curByte += size;
+        return true;
+  }      
+    else{
+        curByte = 0;
+        //free(curSegment);
+        return false;
+      }
+  return true;
+}
+bool DASHSource::DownloadSegment(std::string URL){
+  lastp = Clock::now();
+  //curSegment = (uint8_t *)std::malloc(size);
+  curByte = 0;
+  if(!curSegment) return false;
+  m_curl_receiver->GetAsync(URL,*((IHTTPCallback*)this)); // This is C, not C++ 
+  return true;
+}
+void DASHSource::ThreadLoop() {
+	std::string str;
+	while(true) {
+		#ifdef WIN32
+		Sleep(1); //???
+		#else
+		sleep(1);
+		#endif		
+		str = GetNewURL();
+		if(str != "") {
+			/* call method for download segment, written by Anton */
+      			DownloadSegment(str);
+		}
+	}
+}
+
+std::string DASHSource::GetNewURL() {
+	std::list<SegmentComplexType>::iterator itURL;
+	for(itURL = g_URLList->listURL.begin(); itURL != g_URLList->listURL.end(); ++itURL) {
+		if(!itURL->flag) {
+			itURL->flag = true;
+			return itURL->sURL;
+		}
+	}
+	return "";
 }

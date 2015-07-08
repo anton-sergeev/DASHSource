@@ -30,14 +30,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * INCLUDE FILES                                                   *
 *******************************************************************/
 // #include <string>
-
+#include <list>
+#include <chrono>
 #include "IDASHSource.hpp"
 #include "MPDManager.hpp"
+#include "IHTTPReceiver.hpp"
+#include "CurlReceiver.hpp"
+#include <thread>
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+#include "URLList.hpp"
 
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
 *******************************************************************/
-class DASHSource: public IDASHSource
+typedef std::chrono::high_resolution_clock Clock;
+class DASHSource: public IDASHSource, public IHTTPCallback
 {
 public:
 	DASHSource();
@@ -50,8 +61,20 @@ public:
 
 	virtual bool SetProperty(DASHSourceProperty_e type, void *);
 	virtual bool GetProperty(DASHSourceProperty_e type, void *);
-
+  bool DownloadSegment(std::string URL);
+  bool ReceivedData(char *ptr, size_t size);
+  bool SwitchUp(uint64_t bitrate);
+  bool SwitchDown(uint64_t bitrate);
 private:
 	MPDManager *m_mpd_manager;
+  CurlReceiver *m_curl_receiver;
+  std::list < Representation > Representationlist;
+  std::list < Representation > ::iterator curRepresentation;
+  uint8_t * curSegment;
+  uint32_t curByte;
+  Clock::time_point lastp;
+	void ThreadLoop();
+	std::string GetNewURL();
+	std::thread *m_thread;
 // 	std::string m_url;
 };
