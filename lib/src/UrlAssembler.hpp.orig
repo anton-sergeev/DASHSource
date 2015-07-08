@@ -1,5 +1,5 @@
 /*
- lib/src/MPDManager.hpp
+ lib/src/UrlAssembler.cpp
 
 Copyright (c) 2015, Elecard Multimedia School
 All rights reserved.
@@ -29,56 +29,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
 * INCLUDE FILES                                                   *
 *******************************************************************/
-
+#include <stdint.h>
 #include <string>
-#include <iostream>
-#include <list>
-#include "tinyxml2.h"
-#include "AdaptationSet.hpp"
+#include <map>
+#include "URLList.hpp"
 #include "Representation.hpp"
-#include "Events.hpp"
-#include "Period.hpp"
 #include "Segment.hpp"
 #include "MPDStruct.hpp"
-#include <stdlib.h>
-#include <thread>
+#include "Period.hpp"
+#include "AdaptationSet.hpp"
 
 /******************************************************************
-* EXPORTED TYPEDEFS                            [for headers only] *
+* LOCAL TYPEDEFS                                                    *
 *******************************************************************/
-class MPDManager
+using namespace std;
+
+
+class UrlAssembler
 {
 public:
-	MPDManager();
-	~MPDManager();
-
-	bool Start(std::string &url);
-	bool Stop();
-	bool IsLive();
-
-	MPD *CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement);
-	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
-	Period *CreatePeriod(tinyxml2::XMLElement *element);
-	AdaptationSet *CreateAdaptationSet(tinyxml2::XMLElement *element);
-	RepresentationBaseType *CreateRepresentationBaseType(tinyxml2::XMLElement *element);
-	Representation *CreateRepresentation(tinyxml2::XMLElement *element);
-	URLType* CreateURlType(tinyxml2::XMLElement*);
-	SegmentURLType* CreateSegmentURLType(tinyxml2::XMLElement*);
-	Stamp* CreateStamp(tinyxml2::XMLElement *);
-	SegmentBaseType* CreateSegmentBaseType(tinyxml2::XMLElement *);
-	SegmentTimelineType* CreateSegmentTimelineType(tinyxml2::XMLElement *);
-	MultipleSegmentBaseType* CreateMultipleSegmentBaseType(tinyxml2::XMLElement *);
-	SegmentTemplateType* CreateSegmentTemplateType(tinyxml2::XMLElement *);
-	SegmentListType* CreateSegmentListType(tinyxml2::XMLElement *);
-
+	URLList* assembleURLsIFSegmentBase(MPD *);
+	URLList* assembleURLsIFSegmentTemplate(MPD *);
+	URLList* assembleURLsIFSegmentList(MPD *);
 private:
-	bool ThreadLoop();
-	long int getTimeFromDuration(std::string str);
-	MPD *MPDStruct;
-// 	std::list<DASHRepresentation> GetRepresentationList(void);
-	std::string m_url;
-	std::thread *m_thr;
-	tinyxml2::XMLDocument *MPDFile;
-	std::list<std::string> segmentList;
-//
+	string Replace(const string source, const string subString, const string replacingString);
 };

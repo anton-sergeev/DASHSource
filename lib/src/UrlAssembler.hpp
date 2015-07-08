@@ -38,23 +38,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MPDStruct.hpp"
 #include "Period.hpp"
 #include "AdaptationSet.hpp"
-//#include "list"
 
-#define sz(x) int(x.size())
 /******************************************************************
 * LOCAL TYPEDEFS                                                    *
 *******************************************************************/
 using namespace std;
-const int base = 53; // int for processng of string hash
+
 
 class UrlAssembler
 {
 public:
-	string tegChange(string);
-	void setTeg(string name, string value);
-	void clear();
-	void assembleURLs(MPD *);
+	URLList *assembleURLsIFSegmentBase(MPD *);
+	URLList *assembleURLsIFSegmentTemplate(MPD *);
+	URLList *assembleURLsIFSegmentList(MPD *);
 private:
-	map <uint64_t, string> dict;
-	uint64_t cash(string);
+	string Replace(const string source, const string subString, const string replacingString);
 };

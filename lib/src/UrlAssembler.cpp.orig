@@ -1,14 +1,13 @@
 #include "UrlAssembler.hpp"
 string Replace(const string source, const string subString, const string replacingString)
 {
-	string result = source;
-	string::size_type found = result.find(subString);
-	if(found != string::npos) {
-		result.replace(found, subString.size(), replacingString);
-	} else {
-		result = "DidNotFound";
-	}
-	return result;
+    string result = source;
+    string::size_type found = result.find(subString);
+    if(found != string::npos)
+        result.replace(found,subString.size(),replacingString);
+    else
+        result = "DidNotFound";
+    return result;
 
 }
 
@@ -25,12 +24,10 @@ URLList *UrlAssembler::assembleURLsIFSegmentBase(MPD *mpd)
 					for(currentRepres = (*currentASet)->listRepresentation.begin(); currentRepres != (*currentASet)->listRepresentation.end(); currentRepres++) {
 						string base((*(mpd->listBaseURL.begin()))->URL + (*((*currentPeriod)->listBaseURL.begin()))->URL + (*((*currentASet)->listBaseURL.begin()))->URL + (*((*currentRepres)->BaseURL.begin()))->URL);
 						string newUrl = (*(mpd->listBaseURL.begin()))->byteRange;
-						if(newUrl.find("$base$") != string::npos) {
+						if(newUrl.find("$base$") != string::npos)
 							newUrl = Replace(newUrl, "$base$", base);
-						}
-						if(newUrl.find("$first$-$last$") != string::npos) {
+						if(newUrl.find("$first$-$last$") != string::npos)
 							newUrl = Replace(newUrl, "$first$-$last$", (*currentRepres)->SegmentBase->indexRange);
-						}
 						result->AddURL(newUrl);
 					}
 				}
@@ -55,25 +52,25 @@ URLList *UrlAssembler::assembleURLsIFSegmentTemplate(MPD *mpd)
 			for(currentASet = (*currentPeriod)->adaptationset.begin(); currentASet != (*currentPeriod)->adaptationset.end(); currentASet++) {
 				if(!((*currentASet)->listRepresentation.empty())) {
 					std::list<Representation *>::iterator currentRepres;
-					int i = 0;
+					int i=0;
 					for(currentRepres = (*currentASet)->listRepresentation.begin(); currentRepres != (*currentASet)->listRepresentation.end(); currentRepres++, i++) {
-						string newUrl = (*(mpd->listBaseURL.begin()))->URL +
-										(*((*currentPeriod)->listBaseURL.begin()))->URL +
-										(*((*currentASet)->listBaseURL.begin()))->URL +
-										(*currentASet)->SegmentTemplate->media;
-						if(newUrl.find("$RepresentationID$") != string::npos) {
+						string newUrl = (*(mpd->listBaseURL.begin()))->URL + 
+								(*((*currentPeriod)->listBaseURL.begin()))->URL + 
+								(*((*currentASet)->listBaseURL.begin()))->URL +
+								(*currentASet)->SegmentTemplate->media;
+						if(newUrl.find("$RepresentationID$") != string::npos)
 							Replace(newUrl, "$RepresentationID$", (*currentRepres)->id);
-						}
-						if(newUrl.find("$Number$") != string::npos) {
+						if(newUrl.find("$Number$") != string::npos){
 							uint32_t number = i + (*currentRepres)->SegmentTemplate->m_base->startNumber;
 							Replace(newUrl, "$Number$", std::to_string(number));
-						} else if(newUrl.find("$Time$") != string::npos) {
-							uint32_t number = i + (*currentRepres)->SegmentTemplate->m_base->startNumber;
-							Replace(newUrl, "$Time$", std::to_string(number * (*currentRepres)->SegmentTemplate->m_base->duration));
 						}
-						if(newUrl.find("$Bandwidth$") != string::npos) {
+						else
+							if(newUrl.find("$Time$") != string::npos){
+								uint32_t number = i + (*currentRepres)->SegmentTemplate->m_base->startNumber;
+								Replace(newUrl, "$Time$", std::to_string(number * (*currentRepres)->SegmentTemplate->m_base->duration));
+							}
+						if(newUrl.find("$Bandwidth$") != string::npos)
 							Replace(newUrl, "$Bandwidth$", std::to_string((*currentRepres)->bandwidth));
-						}
 						result->AddURL(newUrl);
 					}
 				}
@@ -100,11 +97,11 @@ URLList *UrlAssembler::assembleURLsIFSegmentList(MPD *mpd)
 					std::list<Representation *>::iterator currentRepres;
 					for(currentRepres = (*currentASet)->listRepresentation.begin(); currentRepres != (*currentASet)->listRepresentation.end(); currentRepres++) {
 						std::list<SegmentURLType *>::iterator currentUrl;
-						for(currentUrl = (*currentRepres)->SegmentList->SegmentURLs.begin(); currentUrl != (*currentRepres)->SegmentList->SegmentURLs.end(); currentUrl++) {
-							result->AddURL((*(mpd->listBaseURL.begin()))->URL +
-										   (*((*currentPeriod)->listBaseURL.begin()))->URL +
-										   (*((*currentASet)->listBaseURL.begin()))->URL +
-										   (*currentUrl)->media);
+						for(currentUrl = (*currentRepres)->SegmentList->SegmentURLs.begin(); currentUrl != (*currentRepres)->SegmentList->SegmentURLs.end(); currentUrl++){
+							result->AddURL( (*(mpd->listBaseURL.begin()))->URL + 
+										(*((*currentPeriod)->listBaseURL.begin()))->URL + 
+										(*((*currentASet)->listBaseURL.begin()))->URL +
+										(*currentUrl)->media );
 						}
 					}
 				}
