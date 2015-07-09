@@ -55,6 +55,7 @@ bool DASHSource::Start(std::string &url)
 		m_mpd_manager = new MPDManager();
 	}
 	m_mpd_manager->Start(url);
+	m_alive = true;
 	m_thread = new std::thread(&DASHSource::ThreadLoop, this);
 	return true;
 }
@@ -70,7 +71,15 @@ bool DASHSource::Stop()
 		delete m_mpd_manager;
 		m_mpd_manager = nullptr;
 	}
-	m_thread->join();
+
+	if(m_thread) {
+		m_alive = false;
+// 		if(m_thread->joinable()) {
+			m_thread->join();
+// 		}
+		delete m_thread;
+		m_thread = NULL;
+	}
 	return true;
 }
 
@@ -126,22 +135,26 @@ bool DASHSource::ReceivedData(char *ptr, size_t size){
       }
   return true;
 }
-bool DASHSource::DownloadSegment(std::string URL){
-  lastp = Clock::now();
-  //curSegment = (uint8_t *)std::malloc(size);
-  curByte = 0;
-  if(!curSegment) return false;
-  m_curl_receiver->GetAsync(URL,*((IHTTPCallback*)this)); // This is C, not C++ 
-  return true;
+
+bool DASHSource::DownloadSegment(std::string URL)
+{
+	lastp = Clock::now();
+	//curSegment = (uint8_t *)std::malloc(size);
+	curByte = 0;
+	if(!curSegment) return false;
+	m_curl_receiver->GetAsync(URL,*((IHTTPCallback*)this)); // This is C, not C++ 
+	return true;
 }
-void DASHSource::ThreadLoop() {
+
+void DASHSource::ThreadLoop()
+{
 	std::string str;
-	while(true) {
-		#ifdef WIN32
-		Sleep(1); //???
-		#else
+	while(m_alive) {
+#ifdef WIN32
+		Sleep(1000);
+#else
 		sleep(1);
-		#endif		
+#endif		
 		str = GetNewURL();
 		if(str != "") {
 			/* call method for download segment, written by Anton */
@@ -151,11 +164,13 @@ void DASHSource::ThreadLoop() {
 }
 
 std::string DASHSource::GetNewURL() {
-	std::list<SegmentComplexType>::iterator itURL;
-	for(itURL = g_URLList->listURL.begin(); itURL != g_URLList->listURL.end(); ++itURL) {
-		if(!itURL->flag) {
-			itURL->flag = true;
-			return itURL->sURL;
+	if(g_URLList) {
+		std::list<SegmentComplexType>::iterator itURL;
+		for(itURL = g_URLList->listURL.begin(); itURL != g_URLList->listURL.end(); ++itURL) {
+			if(!itURL->flag) {
+				itURL->flag = true;
+				return itURL->sURL;
+			}
 		}
 	}
 	return "";

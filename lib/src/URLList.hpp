@@ -48,5 +48,5 @@ class URLList {
 	private:
 	uint64_t getHash(std::string);
 };
-URLList *g_URLList;
+extern URLList *g_URLList;
 #endif
