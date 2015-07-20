@@ -88,7 +88,7 @@ bool MPDManager::IsLive(){
 bool MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 	if(!XMLRootElement)
 		return false;
-	
+
 	mpd = new MPD;
 
 	if(XMLRootElement->Attribute("id")) {
@@ -215,16 +215,16 @@ AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element)
 	tinyxml2::XMLElement* curNodeSet=element;
 	AdaptationSet *newAdaptationSet = new AdaptationSet();
 	newAdaptationSet->m_base = CreateRepresentationBaseType(element);
-	
+
 	element->QueryUnsignedAttribute("id", &(newAdaptationSet->id));
-	
+
 	// #define GETUintAttr(obj,attr) QueryUnsignedAttribute(#attr,&(obj->attr))
-	
+
 	// Given an attribute name, QueryIntAttribute() returns XML_NO_ERROR,
-	// if the conversion can't be performed, or XML_NO_ATTRIBUTE if the attribute doesn't exist. 
-	
-	// If successful, the result of the conversion will be written to 'value'. 
-	// If not successful, nothing will be written to 'value'. 
+	// if the conversion can't be performed, or XML_NO_ATTRIBUTE if the attribute doesn't exist.
+
+	// If successful, the result of the conversion will be written to 'value'.
+	// If not successful, nothing will be written to 'value'.
 	//
 	curNodeSet->GETUintAttr(newAdaptationSet, group);
 	curNodeSet->GETUintAttr(newAdaptationSet, minBandwidth);
@@ -282,7 +282,7 @@ Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) 
 	element->GETUintAttr(curRepr,bandwidth);
 	element->GETUintAttr(curRepr,qualityRanking);
 	const char * att;
-	
+
 	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("BaseURL"); child_element; child_element = child_element->NextSiblingElement("BaseURL")) {
 		BaseURLType *newBaseURL = new BaseURLType;
 		if(child_element->Attribute("serviceLocation")) {
@@ -299,7 +299,7 @@ Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) 
 		curRepr->dependencyId.push_back(std::string(att));
 	if(att=element->Attribute("mediaStreamStructureId"))
 		curRepr->mediaStreamStructureId.push_back(std::string(att));
-		
+
 	if(element->FirstChildElement("SegmentBase")) {
 		curRepr->SegmentBase = CreateSegmentBaseType(element->FirstChildElement("SegmentBase"));
 	}
@@ -342,7 +342,7 @@ RepresentationBaseType *MPDManager::CreateRepresentationBaseType(tinyxml2::XMLEl
 		//***
 	if(att = element->Attribute("sar"))
 		fillRepr->sar = RatioType(std::string(att));
-	return fillRepr;    
+	return fillRepr;
 }
 
 EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
@@ -417,25 +417,25 @@ bool MPDManager::ThreadLoop()
 }
 
 long int MPDManager::getTimeFromDuration(std::string str) {
-	
+
 	double hours = 0, minutes = 0, seconds = 0;
-	
+
 	std::string tmp;
 	for(int i = 2; i < str.size(); i++) {
-		
+
 		tmp = "";
 		for(; (str[i] >= '0' && str[i] <= '9') || str[i] == '.'; i++) {
 			tmp += str[i];
 		}
-	
+
 		if(str[i] == 'H')
 			hours = atof(tmp.c_str());
 		if(str[i] == 'M')
 			minutes = atof(tmp.c_str());
 		if(str[i] == 'S')
 			seconds = atof(tmp.c_str());
-	}	
-	
+	}
+
 	return ((hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000));
 }
 URLType* MPDManager::CreateURlType(tinyxml2::XMLElement*element){
@@ -455,10 +455,10 @@ SegmentBaseType* MPDManager::CreateSegmentBaseType(tinyxml2::XMLElement * elemen
 	curType->presentationTimeOffset=0;
 	curType->availabilityTimeComplete=true;
 	element->GETUintAttr(curType,timescale);
-	element->GETUintAttr(curType,timeShiftBufferDepth);	
+	element->GETUintAttr(curType,timeShiftBufferDepth);
 	if(element->Attribute("presentationTimeOffset"))
 		curType->presentationTimeOffset=atol(element->Attribute("presentationTimeOffset"));
-	
+
 	element->QueryDoubleAttribute("availabilityTimeOffset",&(curType->availabilityTimeOffset));
 	element->QueryBoolAttribute("indexRangeExact",&(curType->indexRangeExact));
 	element->QueryBoolAttribute("availabilityTimeComplete",&(curType->availabilityTimeComplete));
@@ -481,7 +481,7 @@ Stamp *MPDManager::CreateStamp(tinyxml2::XMLElement * element){
 	Stamp *curType= new Stamp;
 	curType->r=0;
 	curType->t=0;
-	
+
 	if(element->Attribute("t"))
 	 curType->t=atol(element->Attribute("t"));
 	if(element->Attribute("d"))
@@ -535,7 +535,7 @@ SegmentURLType* MPDManager::CreateSegmentURLType(tinyxml2::XMLElement * element)
 		curType->index=element->Attribute("index");
 	if(element->Attribute("indexRange"))
 		curType->indexRange=element->Attribute("indexRange");
-	return curType; 
+	return curType;
 };
 SegmentListType *MPDManager::CreateSegmentListType(tinyxml2::XMLElement * element){
 	SegmentListType* curType= new SegmentListType;
