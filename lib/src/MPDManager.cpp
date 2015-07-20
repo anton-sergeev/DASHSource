@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MPDManager.hpp"
 #include <string>
 #include <thread>
+#include <unistd.h>//sleep(), need to replace by portable analog
 #include "CurlReceiver.hpp"
 #include "IHTTPReceiver.hpp"
 
@@ -63,6 +64,8 @@ bool MPDManager::Start(std::string &url)
 {
 	m_url = url;
 	m_thr = new std::thread(&MPDManager::ThreadLoop, this);
+	m_alive = true;
+
 
 	//TO DO Solve problem about start of parsing
 	//std::string filename = "OfForestAndMen.zip"; // For example
@@ -74,11 +77,12 @@ bool MPDManager::Start(std::string &url)
 bool MPDManager::Stop()
 {
 	//stop thread
+	m_alive = false;
 	return true;
 }
 
 bool MPDManager::IsLive(){
-	if (!MPDStruct || MPDStruct->type == "static"){
+	if (!mpd || mpd->type == "static"){
 		return false;
 	}
 	return true;
@@ -87,67 +91,69 @@ bool MPDManager::IsLive(){
 MPD *MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 	if(!XMLRootElement)
 		return NULL;
-	MPD *newMPD = new MPD;
+
+	mpd = new MPD;
+
 	if(XMLRootElement->Attribute("id")) {
-		newMPD->id = XMLRootElement->Attribute("id");
+		mpd->id = XMLRootElement->Attribute("id");
 	}
 	if(XMLRootElement->Attribute("profiles")) {
         std::string prof = XMLRootElement->Attribute("profiles");
         if (prof == "urn:mpeg:dash:profile:full:2011") {
-            newMPD->profile = eProfiles_full;
+            mpd->profile = eProfiles_full;
         }
         else if (prof == "urn:mpeg:dash:profile:isoff-on-demand:2011") {
-            newMPD->profile = eProfiles_on_demand;
+            mpd->profile = eProfiles_on_demand;
         }
         else if (prof == "urn:mpeg:dash:profile:isoff-live:2011") {
-            newMPD->profile = eProfiles_live;
+            mpd->profile = eProfiles_live;
         }
         else if (prof == "urn:mpeg:dash:profile:isoff-main:2011") {
-            newMPD->profile = eProfiles_main;
+            mpd->profile = eProfiles_main;
         }
         else if (prof == "urn:mpeg:dash:profile:mp2t-main:2011") {
-            newMPD->profile = eProfiles_mpeg_2_ts_main;
+            mpd->profile = eProfiles_mpeg_2_ts_main;
         }
         else if (prof == "urn:mpeg:dash:profile:mp2t-simple:2011") {
-            newMPD->profile = eProfiles_mpeg_2_ts_simple;
+            mpd->profile = eProfiles_mpeg_2_ts_simple;
         }
 	}
 	if(XMLRootElement->Attribute("type")) {
-		newMPD->type = XMLRootElement->Attribute("type");
+		mpd->type = XMLRootElement->Attribute("type");
 	}
 	if(XMLRootElement->Attribute("availabilityStartTime")) {
-		newMPD->availabilityStartTime = XMLRootElement->Attribute("availabilityStartTime");
+		mpd->availabilityStartTime = XMLRootElement->Attribute("availabilityStartTime");
 	}
 	if(XMLRootElement->Attribute("availabilityEndTime")) {
-		newMPD->availabilityEndTime = XMLRootElement->Attribute("availabilityEndTime");
+		mpd->availabilityEndTime = XMLRootElement->Attribute("availabilityEndTime");
 	}
 	if(XMLRootElement->Attribute("publishTime")) {
-		newMPD->publishTime = XMLRootElement->Attribute("publishTime");
+		mpd->publishTime = XMLRootElement->Attribute("publishTime");
 	}
 	if(XMLRootElement->Attribute("mediaPresentationDuration")) {
-		newMPD->mediaPresentationDuration = getTimeFromDuration(XMLRootElement->Attribute("mediaPresentationDuration"));
+		mpd->mediaPresentationDuration = getTimeFromDuration(XMLRootElement->Attribute("mediaPresentationDuration"));
 	}
 	if(XMLRootElement->Attribute("minimumUpdatePeriod")) {
-		newMPD->minimumUpdatePeriod = getTimeFromDuration(XMLRootElement->Attribute("minimumUpdatePeriod"));
+		mpd->minimumUpdatePeriod = getTimeFromDuration(XMLRootElement->Attribute("minimumUpdatePeriod"));
 	}
 	if(XMLRootElement->Attribute("minBufferTime")) {
-		newMPD->minBufferTime = getTimeFromDuration(XMLRootElement->Attribute("minBufferTime"));
+		mpd->minBufferTime = getTimeFromDuration(XMLRootElement->Attribute("minBufferTime"));
 	}
 	if(XMLRootElement->Attribute("timeShiftBufferDepth")) {
-		newMPD->timeShiftBufferDepth = getTimeFromDuration(XMLRootElement->Attribute("timeShiftBufferDepth"));
+		mpd->timeShiftBufferDepth = getTimeFromDuration(XMLRootElement->Attribute("timeShiftBufferDepth"));
 	}
 	if(XMLRootElement->Attribute("suggestedPresentationDelay")) {
-		newMPD->suggestedPresentationDelay = getTimeFromDuration(XMLRootElement->Attribute("suggestedPresentationDelay"));
+		mpd->suggestedPresentationDelay = getTimeFromDuration(XMLRootElement->Attribute("suggestedPresentationDelay"));
 	}
 	if(XMLRootElement->Attribute("maxSegmentDuration")) {
-		newMPD->maxSegmentDuration = getTimeFromDuration(XMLRootElement->Attribute("maxSegmentDuration"));
+		mpd->maxSegmentDuration = getTimeFromDuration(XMLRootElement->Attribute("maxSegmentDuration"));
 	}
 	if(XMLRootElement->Attribute("maxSubsegmentDuration")) {
-		newMPD->maxSubsegmentDuration = getTimeFromDuration(XMLRootElement->Attribute("maxSubsegmentDuration"));
+		mpd->maxSubsegmentDuration = getTimeFromDuration(XMLRootElement->Attribute("maxSubsegmentDuration"));
 	}
 	for(tinyxml2::XMLElement *child_element = XMLRootElement->FirstChildElement("Period"); child_element; child_element = child_element->NextSiblingElement("Period")) {
 		Period *newPeriod = CreatePeriod(child_element);
-		newMPD->period.push_back(newPeriod);
+		mpd->period.push_back(newPeriod);
 	}
 	for(tinyxml2::XMLElement *child_element = XMLRootElement->FirstChildElement("BaseURL"); child_element; child_element = child_element->NextSiblingElement("BaseURL")) {
 		BaseURLType *newBaseURL = new BaseURLType;
@@ -157,10 +163,10 @@ MPD *MPDManager::CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement) {
 		if(child_element->Attribute("byteRange"))
 			newBaseURL->byteRange = child_element->Attribute("byteRange");
 		newBaseURL->URL = child_element->GetText();
-		newMPD->listBaseURL.push_back(newBaseURL);
+		mpd->listBaseURL.push_back(newBaseURL);
 	}
-	MPDStruct = newMPD;
-	return newMPD;
+
+	return mpd;
 }
 
 Period *MPDManager::CreatePeriod(tinyxml2::XMLElement *element) {
@@ -213,16 +219,16 @@ AdaptationSet *MPDManager::CreateAdaptationSet(tinyxml2::XMLElement *element)
 	tinyxml2::XMLElement* curNodeSet=element;
 	AdaptationSet *newAdaptationSet = new AdaptationSet();
 	newAdaptationSet->m_base = CreateRepresentationBaseType(element);
-	
+
 	element->QueryUnsignedAttribute("id", &(newAdaptationSet->id));
-	
+
 	// #define GETUintAttr(obj,attr) QueryUnsignedAttribute(#attr,&(obj->attr))
-	
+
 	// Given an attribute name, QueryIntAttribute() returns XML_NO_ERROR,
-	// if the conversion can't be performed, or XML_NO_ATTRIBUTE if the attribute doesn't exist. 
-	
-	// If successful, the result of the conversion will be written to 'value'. 
-	// If not successful, nothing will be written to 'value'. 
+	// if the conversion can't be performed, or XML_NO_ATTRIBUTE if the attribute doesn't exist.
+
+	// If successful, the result of the conversion will be written to 'value'.
+	// If not successful, nothing will be written to 'value'.
 	//
 	curNodeSet->GETUintAttr(newAdaptationSet, group);
 	curNodeSet->GETUintAttr(newAdaptationSet, minBandwidth);
@@ -280,7 +286,7 @@ Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) 
 	element->GETUintAttr(curRepr,bandwidth);
 	element->GETUintAttr(curRepr,qualityRanking);
 	const char * att;
-	
+
 	for(tinyxml2::XMLElement *child_element = element->FirstChildElement("BaseURL"); child_element; child_element = child_element->NextSiblingElement("BaseURL")) {
 		BaseURLType *newBaseURL = new BaseURLType;
 		if(child_element->Attribute("serviceLocation")) {
@@ -297,7 +303,7 @@ Representation *MPDManager::CreateRepresentation(tinyxml2::XMLElement *element) 
 		curRepr->dependencyId.push_back(std::string(att));
 	if(att=element->Attribute("mediaStreamStructureId"))
 		curRepr->mediaStreamStructureId.push_back(std::string(att));
-		
+
 	if(element->FirstChildElement("SegmentBase")) {
 		curRepr->SegmentBase = CreateSegmentBaseType(element->FirstChildElement("SegmentBase"));
 	}
@@ -340,7 +346,7 @@ RepresentationBaseType *MPDManager::CreateRepresentationBaseType(tinyxml2::XMLEl
 		//***
 	if(att = element->Attribute("sar"))
 		fillRepr->sar = RatioType(std::string(att));
-	return fillRepr;    
+	return fillRepr;
 }
 
 EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
@@ -371,41 +377,69 @@ EventStream *MPDManager::CreateEventStream(tinyxml2::XMLElement *element)
 	return newEventStream;
 }
 
-bool MPDManager::ThreadLoop()
+bool MPDManager::GetMPD(IHTTPReceiver *http_receiver)
 {
-	// loop {
+	std::string MPD_content;
+
 	//  1. get MPD via IHTTPReceiver
 	//  2. parse MPD passing it into tinyxml
 	//  3. fill structures: Representation, Segments, e.g.
-	// }
-	std::string MPD_content;
-	IHTTPReceiver* curl_receiver = IHTTPReceiver::Instance();
-	curl_receiver -> Init();
-	curl_receiver -> Get(m_url, MPD_content);
+	http_receiver->Get(m_url, MPD_content);
+	MPDFile = new tinyxml2::XMLDocument();
+	MPDFile->Parse(MPD_content.c_str());
+
+	if(!CreateMPDStruct(MPDFile->RootElement())) {
+		return false;
+	}
+
+	delete MPDFile;
 
 	return true;
 }
 
+bool MPDManager::ThreadLoop()
+{
+	IHTTPReceiver *curl_receiver = IHTTPReceiver::Instance();
+	curl_receiver->Init();
+
+	if(!MPDManager::IsLive()) {
+		if(!GetMPD(curl_receiver)) {
+			return false;
+		}
+	} else {
+		while(m_alive) {
+			if(!GetMPD(curl_receiver)) {
+				return false;
+			}
+			//TODO: here should be paause described in mpd, temporary 1s now
+			sleep(1);
+		}
+	}
+
+	curl_receiver->Release();
+	return true;
+}
+
 long int MPDManager::getTimeFromDuration(std::string str) {
-	
+
 	double hours = 0, minutes = 0, seconds = 0;
-	
+
 	std::string tmp;
 	for(int i = 2; i < str.size(); i++) {
-		
+
 		tmp = "";
 		for(; (str[i] >= '0' && str[i] <= '9') || str[i] == '.'; i++) {
 			tmp += str[i];
 		}
-	
+
 		if(str[i] == 'H')
 			hours = atof(tmp.c_str());
 		if(str[i] == 'M')
 			minutes = atof(tmp.c_str());
 		if(str[i] == 'S')
 			seconds = atof(tmp.c_str());
-	}	
-	
+	}
+
 	return ((hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000));
 }
 URLType* MPDManager::CreateURlType(tinyxml2::XMLElement*element){
@@ -425,10 +459,10 @@ SegmentBaseType* MPDManager::CreateSegmentBaseType(tinyxml2::XMLElement * elemen
 	curType->presentationTimeOffset=0;
 	curType->availabilityTimeComplete=true;
 	element->GETUintAttr(curType,timescale);
-	element->GETUintAttr(curType,timeShiftBufferDepth);	
+	element->GETUintAttr(curType,timeShiftBufferDepth);
 	if(element->Attribute("presentationTimeOffset"))
 		curType->presentationTimeOffset=atol(element->Attribute("presentationTimeOffset"));
-	
+
 	element->QueryDoubleAttribute("availabilityTimeOffset",&(curType->availabilityTimeOffset));
 	element->QueryBoolAttribute("indexRangeExact",&(curType->indexRangeExact));
 	element->QueryBoolAttribute("availabilityTimeComplete",&(curType->availabilityTimeComplete));
@@ -451,7 +485,7 @@ Stamp *MPDManager::CreateStamp(tinyxml2::XMLElement * element){
 	Stamp *curType= new Stamp;
 	curType->r=0;
 	curType->t=0;
-	
+
 	if(element->Attribute("t"))
 	 curType->t=atol(element->Attribute("t"));
 	if(element->Attribute("d"))
@@ -505,7 +539,7 @@ SegmentURLType* MPDManager::CreateSegmentURLType(tinyxml2::XMLElement * element)
 		curType->index=element->Attribute("index");
 	if(element->Attribute("indexRange"))
 		curType->indexRange=element->Attribute("indexRange");
-	return curType; 
+	return curType;
 };
 SegmentListType *MPDManager::CreateSegmentListType(tinyxml2::XMLElement * element){
 	SegmentListType* curType= new SegmentListType;

@@ -40,6 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Period.hpp"
 #include "Segment.hpp"
 #include "MPDStruct.hpp"
+#include "URLList.hpp"
+#include "IHTTPReceiver.hpp"
 #include <stdlib.h>
 #include <thread>
 
@@ -55,8 +57,9 @@ public:
 	bool Start(std::string &url);
 	bool Stop();
 	bool IsLive();
-
 	MPD *CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement);
+
+private:
 	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
 	Period *CreatePeriod(tinyxml2::XMLElement *element);
 	AdaptationSet *CreateAdaptationSet(tinyxml2::XMLElement *element);
@@ -71,13 +74,15 @@ public:
 	SegmentTemplateType* CreateSegmentTemplateType(tinyxml2::XMLElement *);
 	SegmentListType* CreateSegmentListType(tinyxml2::XMLElement *);
 
-private:
+	static URLList urlList;
+	bool GetMPD(IHTTPReceiver *);
 	bool ThreadLoop();
 	long int getTimeFromDuration(std::string str);
-	MPD *MPDStruct;
+
+	MPD *mpd;
 // 	std::list<DASHRepresentation> GetRepresentationList(void);
 	std::string m_url;
 	std::thread *m_thr;
 	tinyxml2::XMLDocument *MPDFile;
-//
+	bool m_alive;
 };

@@ -28,6 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 #include "URLList.hpp"
 
+URLList *g_URLList = NULL;
+
 uint64_t URLList::getHash(std::string srcstr) {
 	const uint32_t base = 53;
 	uint64_t res = 0;

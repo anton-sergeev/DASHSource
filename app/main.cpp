@@ -14,7 +14,7 @@ modification, are permitted provided that the following conditions are met:
   this list of conditions and the following disclaimer in the documentation
   and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
@@ -49,8 +49,8 @@ static int32_t portable_sleep(int32_t millsec)
 	Sleep(millsec);
 	rc = 0;
 #else
-	/* Portable sleep for platforms other than Windows. */ 
-	struct timeval wait = { 0, millsec * 1000 }; /* 10s */ 
+	/* Portable sleep for platforms other than Windows. */
+	struct timeval wait = { 0, millsec * 1000 }; /* 10s */
 	rc = select(0, NULL, NULL, NULL, &wait);
 #endif
 	return rc;
@@ -59,12 +59,12 @@ static int32_t portable_sleep(int32_t millsec)
 int32_t main(int32_t argc, char *argv[])
 {
 	IDASHSource *src = IDASHSource::CreateInstance();
-	std::string url("http://wc.exn.su:8888/attachments/download/3/OfForestAndMen.zip"); // TODO: CHANGE!!!
+	std::string url("http://dash.edgesuite.net/dash264/TestCases/1a/netflix/exMPD_BIP_TC1.mpd"); // TODO: CHANGE!!!
 
 	if (argc == 2){
 		url = std::string(argv[1]);
 	}
-	
+
 	src->Start(url);
 
 	portable_sleep(10 * 1000);
