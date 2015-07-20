@@ -59,7 +59,7 @@ static int32_t portable_sleep(int32_t millsec)
 int32_t main(int32_t argc, char *argv[])
 {
 	IDASHSource *src = IDASHSource::CreateInstance();
-	std::string url("http://wc.exn.su:8888/attachments/download/3/OfForestAndMen.zip"); // TODO: CHANGE!!!
+	std::string url("http://dash.edgesuite.net/dash264/TestCases/1a/qualcomm/1/MultiRate.mpd"); // TODO: CHANGE!!!
 
 	if (argc == 2){
 		url = std::string(argv[1]);

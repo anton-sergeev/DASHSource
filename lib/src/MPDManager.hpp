@@ -44,6 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "IHTTPReceiver.hpp"
 #include <stdlib.h>
 #include <thread>
+#include "UrlAssembler.hpp"
 
 /******************************************************************
 * EXPORTED TYPEDEFS                            [for headers only] *
@@ -59,6 +60,7 @@ public:
 	bool IsLive();
 
 	bool CreateMPDStruct(tinyxml2::XMLElement *XMLRootElement);
+
 private:
 	EventStream *CreateEventStream(tinyxml2::XMLElement *element);
 	Period *CreatePeriod(tinyxml2::XMLElement *element);

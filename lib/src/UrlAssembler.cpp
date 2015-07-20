@@ -1,5 +1,5 @@
 #include "UrlAssembler.hpp"
-string Replace(const string source, const string subString, const string replacingString)
+string UrlAssembler::Replace(const string source, const string subString, const string replacingString)
 {
 	string result = source;
 	string::size_type found = result.find(subString);
@@ -23,15 +23,17 @@ URLList *UrlAssembler::assembleURLsIFSegmentBase(MPD *mpd)
 				if(!((*currentASet)->listRepresentation.empty())) {
 					std::list<Representation *>::iterator currentRepres;
 					for(currentRepres = (*currentASet)->listRepresentation.begin(); currentRepres != (*currentASet)->listRepresentation.end(); currentRepres++) {
-						string base((*(mpd->listBaseURL.begin()))->URL + (*((*currentPeriod)->listBaseURL.begin()))->URL + (*((*currentASet)->listBaseURL.begin()))->URL + (*((*currentRepres)->BaseURL.begin()))->URL);
-						string newUrl = (*(mpd->listBaseURL.begin()))->byteRange;
-						if(newUrl.find("$base$") != string::npos) {
-							newUrl = Replace(newUrl, "$base$", base);
-						}
-						if(newUrl.find("$first$-$last$") != string::npos) {
-							newUrl = Replace(newUrl, "$first$-$last$", (*currentRepres)->SegmentBase->indexRange);
-						}
-						result->AddURL(newUrl);
+						string base;
+						//if(((*(mpd->listBaseURL.begin()))->URL).empty())
+						base=(*((*currentRepres)->BaseURL.begin()))->URL;//(*(mpd->listBaseURL.begin()))->URL ;//+ (*((*currentPeriod)->listBaseURL.begin()))->URL + (*((*currentASet)->listBaseURL.begin()))->URL + ;
+//						string newUrl = (*(mpd->listBaseURL.begin()))->byteRange;
+//						if(newUrl.find("$base$") != string::npos) {
+//							newUrl = Replace(newUrl, "$base$", base);
+//						}
+//						if(newUrl.find("$first$-$last$") != string::npos) {
+//							newUrl = Replace(newUrl, "$first$-$last$", (*currentRepres)->SegmentBase->indexRange);
+//						}
+//						result->AddURL(newUrl);
 					}
 				}
 			}
