@@ -48,7 +48,7 @@ using namespace std;
 class UrlAssembler
 {
 public:
-	URLList *assembleURLsIFSegmentBase(MPD *);
+	URLList *assembleURLsIFSegmentBase(MPD *, string);
 	URLList *assembleURLsIFSegmentTemplate(MPD *);
 	URLList *assembleURLsIFSegmentList(MPD *);
 private:

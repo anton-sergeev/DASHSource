@@ -1,4 +1,5 @@
 #include "UrlAssembler.hpp"
+#include "MPDManager.hpp"
 string UrlAssembler::Replace(const string source, const string subString, const string replacingString)
 {
 	string result = source;
@@ -12,36 +13,51 @@ string UrlAssembler::Replace(const string source, const string subString, const 
 
 }
 
-URLList *UrlAssembler::assembleURLsIFSegmentBase(MPD *mpd)
+URLList *UrlAssembler::assembleURLsIFSegmentBase(MPD *mpd, string m_url)
 {
-	URLList *result;
+	URLList *result= new URLList;
 	std::list<Period *>::iterator currentPeriod;
+	string base="";
+	if(!mpd->listBaseURL.empty())
+        base+=(*(mpd->listBaseURL.begin()))->URL;
+    else{
+            base+=m_url; // удалить кусок сконца!
+            while(base[base.length()-1]!='/')
+            base.pop_back();
+    }
 	for(currentPeriod = mpd->period.begin(); currentPeriod != mpd->period.end(); currentPeriod++) {
+        if(!(*currentPeriod)->listBaseURL.empty())
+            base+=(*((*currentPeriod)->listBaseURL.begin()))->URL;
 		if(!((*currentPeriod)->adaptationset.empty())) {
 			std::list<AdaptationSet *>::iterator currentASet;
 			for(currentASet = (*currentPeriod)->adaptationset.begin(); currentASet != (*currentPeriod)->adaptationset.end(); currentASet++) {
+				if(!(*currentASet)->listBaseURL.empty())
+                    base+=(*((*currentASet)->listBaseURL.begin()))->URL;
 				if(!((*currentASet)->listRepresentation.empty())) {
 					std::list<Representation *>::iterator currentRepres;
 					for(currentRepres = (*currentASet)->listRepresentation.begin(); currentRepres != (*currentASet)->listRepresentation.end(); currentRepres++) {
-						string base;
-						//if(((*(mpd->listBaseURL.begin()))->URL).empty())
-						base=(*((*currentRepres)->BaseURL.begin()))->URL;//(*(mpd->listBaseURL.begin()))->URL ;//+ (*((*currentPeriod)->listBaseURL.begin()))->URL + (*((*currentASet)->listBaseURL.begin()))->URL + ;
-//						string newUrl = (*(mpd->listBaseURL.begin()))->byteRange;
-//						if(newUrl.find("$base$") != string::npos) {
-//							newUrl = Replace(newUrl, "$base$", base);
-//						}
-//						if(newUrl.find("$first$-$last$") != string::npos) {
-//							newUrl = Replace(newUrl, "$first$-$last$", (*currentRepres)->SegmentBase->indexRange);
-//						}
-//						result->AddURL(newUrl);
+						string newUrl;
+						if(!(*currentRepres)->BaseURL.empty())
+                            newUrl=base+(*((*currentRepres)->BaseURL.begin()))->URL;
+						if(!mpd->listBaseURL.empty()){
+                            string newUrlWithByteRange = (*(mpd->listBaseURL.begin()))->byteRange;
+                            if(newUrl.find("$base$") != string::npos) {
+                                newUrlWithByteRange = Replace(newUrlWithByteRange, "$base$", newUrl);
+                            }
+                            if(newUrl.find("$first$-$last$") != string::npos) {
+                                newUrlWithByteRange = Replace(newUrlWithByteRange, "$first$-$last$", (*currentRepres)->SegmentBase->indexRange);
+                            }
+                            newUrl = newUrlWithByteRange;
+						}
+						result->AddURL(newUrl);
 					}
 				}
 			}
 		}
-		// else
-		// {
-		// 	//error -> invalid mpd
-		// }
+		 else
+		 {
+            throw "Invalid MPD. There are no periods!";
+		 }
 
 	}
 	return result;

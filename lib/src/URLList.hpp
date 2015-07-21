@@ -39,6 +39,8 @@ typedef struct SegmentComplexType {
 
 class URLList {
 	public:
+	URLList() {}
+	~URLList() {}
 	bool isEmpty();
 	void AddURL(std::string); // in tail
 	void RemoveUrl(); // from head

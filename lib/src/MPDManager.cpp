@@ -395,7 +395,7 @@ bool MPDManager::GetMPD(IHTTPReceiver *http_receiver)
 
 	delete MPDFile;
     UrlAssembler * newurlA;
-    newurlA->assembleURLsIFSegmentBase(mpd);
+    newurlA->assembleURLsIFSegmentBase(mpd, m_url);
 	return true;
 }
 
